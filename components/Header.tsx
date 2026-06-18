@@ -440,21 +440,118 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Mobile nav */}
-        {menuOpen && (
-          <div className="md:hidden px-4 pb-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)", background: "#07090f" }}>
-            {NAV.map((n) => (
-              <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)}
-                className="flex items-center py-3 text-sm font-medium transition-colors"
-                style={{ color: "rgba(203,213,225,0.7)", borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#fff"}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.7)"}>
-                {n.label}
-              </Link>
-            ))}
-          </div>
-        )}
       </header>
+
+      {/* Mobile nav — full-screen portal overlay */}
+      {menuOpen && typeof document !== "undefined" && createPortal(
+        <>
+          {/* Backdrop */}
+          <div onClick={() => setMenuOpen(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(2,6,18,0.75)", backdropFilter: "blur(6px)" }} />
+
+          {/* Panel */}
+          <div style={{
+            position: "fixed", top: 0, left: 0, bottom: 0, zIndex: 9999,
+            width: "min(100vw, 320px)",
+            background: "#080f20",
+            borderRight: "1px solid rgba(255,255,255,0.09)",
+            boxShadow: "24px 0 72px rgba(0,0,0,0.65)",
+            display: "flex", flexDirection: "column",
+            animation: "slideInLeft 0.28s cubic-bezier(0.16,1,0.3,1)",
+          }}>
+            <style>{`@keyframes slideInLeft{from{transform:translateX(-100%)}to{transform:translateX(0)}}`}</style>
+
+            {/* Gradient top bar */}
+            <div className="h-0.75 shrink-0" style={{ background: "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)" }} />
+
+            {/* Header row */}
+            <div className="flex items-center justify-between px-5 py-4 shrink-0"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              <Logo />
+              <button onClick={() => setMenuOpen(false)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.7)"; }}>
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Nav links */}
+            <nav className="flex-1 px-4 py-4 flex flex-col gap-1 overflow-y-auto">
+              {NAV.map((n) => (
+                <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all"
+                  style={{ color: "rgba(203,213,225,0.75)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.75)"; }}>
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "#3b82f6" }} />
+                  {n.label}
+                </Link>
+              ))}
+
+              <div className="h-px my-3" style={{ background: "rgba(255,255,255,0.06)" }} />
+
+              <Link href="/cart" onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all"
+                style={{ color: "rgba(203,213,225,0.75)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.75)"; }}>
+                <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
+                Cart {totalItems > 0 && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa" }}>{totalItems}</span>}
+              </Link>
+            </nav>
+
+            {/* Bottom — auth */}
+            <div className="shrink-0 px-4 py-4" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+              <Show when="signed-out">
+                <button onClick={() => { setMenuOpen(false); setAuthOpen(true); }}
+                  className="w-full flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-white text-sm transition-all"
+                  style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 18px rgba(37,99,235,0.4)" }}>
+                  <User size={15} /> Sign In
+                </button>
+              </Show>
+              <Show when="signed-in">
+                <MobileUserRow onClose={() => setMenuOpen(false)} />
+              </Show>
+            </div>
+          </div>
+        </>,
+        document.body
+      )}
+    </div>
+  );
+}
+
+/* ─── Mobile user row (inside mobile menu) ───────────── */
+function MobileUserRow({ onClose }: { onClose: () => void }) {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  if (!user) return null;
+  const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
+  const email = user.emailAddresses[0]?.emailAddress ?? "";
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-9 h-9 rounded-full overflow-hidden shrink-0"
+        style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)" }}>
+        {user.imageUrl
+          ? <img src={user.imageUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+          : <span className="w-full h-full flex items-center justify-center text-white text-xs font-extrabold">{name[0]}</span>
+        }
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+        <p className="text-[11px] truncate" style={{ color: "rgba(100,116,139,0.7)" }}>{email}</p>
+      </div>
+      <button onClick={() => { signOut(); onClose(); }}
+        className="w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0"
+        style={{ color: "rgba(248,113,113,0.7)", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.7)"; }}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
     </div>
   );
 }
