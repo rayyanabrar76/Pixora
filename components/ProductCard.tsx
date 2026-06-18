@@ -55,8 +55,8 @@ export default function ProductCard({ service }: { service: Service }) {
           <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to bottom,transparent 40%,#0c1525 100%)" }} />
           <ServiceBanner name={service.name} icon={service.icon} category={service.category} />
 
-          {/* Quick View button */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Quick View button — desktop hover only, hidden on mobile to prevent tap interference */}
+          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none sm:pointer-events-auto">
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
               className="relative z-10 flex items-center gap-2 font-bold text-xs px-5 py-2.5 rounded-full transition-all hover:scale-105 text-white"
