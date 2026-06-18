@@ -175,18 +175,18 @@ const Bg4 = () => (
 
 const SLIDES = [
   {
-    Bg: Bg1,
-    tag: "Professional Digital Services",
-    title: "Grow Your Business",
-    highlight: "Online — Fast.",
-    sub: "From logos to full websites, SEO to social media — we handle your digital presence so you can focus on what you do best.",
-  },
-  {
     Bg: Bg2,
     tag: "Digital Marketing Experts",
     title: "Reach More Customers",
     highlight: "With Smart Marketing.",
     sub: "SEO, social media, email automation — we grow your audience with data-driven strategies that deliver real results.",
+  },
+  {
+    Bg: Bg1,
+    tag: "Professional Digital Services",
+    title: "Grow Your Business",
+    highlight: "Online — Fast.",
+    sub: "From logos to full websites, SEO to social media — we handle your digital presence so you can focus on what you do best.",
   },
   {
     Bg: Bg3,

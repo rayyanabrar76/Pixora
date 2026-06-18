@@ -401,7 +401,7 @@ function Mock2() {
         </div>
 
         {/* Split pane */}
-        <div className="flex" style={{height:185}}>
+        <div className="flex" style={{height:225}}>
           {/* Code editor */}
           <div className="flex-1 bg-[#0d1117] overflow-hidden py-2">
             {lines.map((l,i) => (
@@ -581,12 +581,12 @@ function Mock3() {
 /* ══════════════════════════════════════════════════════
    Main export
 ══════════════════════════════════════════════════════ */
-const MOCKS = [Mock0, Mock1, Mock2, Mock3];
+const MOCKS = [Mock1, Mock0, Mock2, Mock3];
 
 export default function HeroMockup({ slide }: { slide: number }) {
   const Mock = MOCKS[slide] ?? Mock0;
   return (
-    <div className="relative py-8 px-8">
+    <div className="relative py-8 px-8" style={{zoom: 1.2}}>
       <style>{ANIM}</style>
       <Mock />
     </div>
