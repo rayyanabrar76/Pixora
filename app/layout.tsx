@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import TopProgress from "@/components/TopProgress";
 
 export const metadata: Metadata = {
-  title: "Pixora — Digital Services",
+  title: "Pixora - Digital Services",
   description: "Pixora: professional web development, design, SEO, social media, and more.",
 };
 
