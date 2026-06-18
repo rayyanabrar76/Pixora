@@ -244,7 +244,7 @@ export default function Hero() {
 
       {/* Content — 2 columns on lg+ */}
       <div
-        className="relative h-full max-w-6xl mx-auto px-6 flex items-center gap-8 transition-opacity duration-300"
+        className="relative h-full max-w-6xl mx-auto px-6 flex items-start pt-10 lg:items-center lg:pt-0 gap-8 transition-opacity duration-300"
         style={{ opacity: fading ? 0 : 1 }}
       >
         {/* Left: text */}
