@@ -20,6 +20,9 @@ export default function ServiceBanner({ name, icon, category }: {
           <stop offset="0%" stopColor={gradStart(category)} />
           <stop offset="100%" stopColor={gradEnd(category)} />
         </linearGradient>
+        <clipPath id={`clip-${gradId}`}>
+          <rect x="0" y="0" width="150" height="156" />
+        </clipPath>
       </defs>
 
       {/* Background */}
@@ -40,17 +43,14 @@ export default function ServiceBanner({ name, icon, category }: {
         <circle cx="22" cy="20" r="2.5" fill="#60a5fa" />
       </g>
 
-      {/* Service name — left column, clipped so text never overflows */}
-      <clipPath id={`clip-${gradId}`}>
-        <rect x="0" y="0" width="150" height="156" />
-      </clipPath>
+      {/* Service name — left column, clipped to left half so it never overlaps the illustration */}
       <g clipPath={`url(#clip-${gradId})`}>
         {words.map((word, i) => (
           <text key={i} x="14" y={startY + i * lineH}
             fill="white"
             fontFamily="system-ui,-apple-system,sans-serif"
             fontSize="16" fontWeight="800" letterSpacing="0.3">
-            {word.length > 10 ? word.slice(0, 10) + "…" : word}
+            {word}
           </text>
         ))}
       </g>
