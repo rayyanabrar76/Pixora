@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import {
-  ShoppingCart, Menu, X, Search, User, ArrowRight,
+  ShoppingCart, Menu, X, Search, User, ArrowRight, Trash2,
   CreditCard, Star, Image, Smartphone, Laptop, Building, Mail, Phone,
   ShoppingBag, Share2, Camera, MapPin, FileText, TrendingUp,
   Settings, Monitor, MessageCircle, Users, type LucideIcon,
