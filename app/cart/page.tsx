@@ -118,12 +118,12 @@ export default function CartPage() {
 
                 <div className="flex gap-0">
                   {/* Thumbnail */}
-                  <div className="w-28 shrink-0 relative overflow-hidden" style={{ minHeight: "100px" }}>
+                  <div className="w-24 sm:w-32 shrink-0 relative overflow-hidden" style={{ minHeight: "120px" }}>
                     <div className="absolute inset-0">
                       <ServiceBanner name={item.name} icon={item.icon} category={item.category} />
                     </div>
                     <div className="absolute inset-0"
-                      style={{ background: "linear-gradient(to right,transparent 60%,#0b1120 100%)" }} />
+                      style={{ background: "linear-gradient(to right,transparent 55%,#0b1120 100%)" }} />
                     {item.badge && (
                       <span className="absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider text-white z-10"
                         style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
@@ -133,52 +133,54 @@ export default function CartPage() {
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                  <div className="flex-1 px-4 py-3 flex flex-col justify-between min-w-0 gap-3">
+                    {/* Top: category + name + desc */}
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>
                         {item.category}
                       </span>
-                      <h3 className="font-extrabold text-base mt-0.5 leading-snug" style={{ color: "#e2e8f0" }}>
+                      <h3 className="font-extrabold text-sm sm:text-base mt-0.5 leading-snug" style={{ color: "#e2e8f0" }}>
                         {item.name}
                       </h3>
-                      <p className="text-xs mt-1 line-clamp-1" style={{ color: "rgba(100,116,139,0.7)" }}>
+                      <p className="text-xs mt-1 line-clamp-1 hidden sm:block" style={{ color: "rgba(100,116,139,0.7)" }}>
                         {item.description}
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between mt-4">
-                      {/* Qty control */}
-                      <div className="flex items-center rounded-lg overflow-hidden"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
-                        <button onClick={() => updateQty(item.id, item.qty - 1)}
-                          className="w-8 h-8 flex items-center justify-center transition-all"
-                          style={{ color: "rgba(148,163,184,0.5)" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.5)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                          <Minus size={11} />
-                        </button>
-                        <span className="w-8 text-center text-sm font-bold" style={{ color: "#e2e8f0" }}>{item.qty}</span>
-                        <button onClick={() => updateQty(item.id, item.qty + 1)}
-                          className="w-8 h-8 flex items-center justify-center transition-all"
-                          style={{ color: "rgba(148,163,184,0.5)" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.5)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                          <Plus size={11} />
-                        </button>
-                      </div>
+                    {/* Bottom: price left, qty + trash right */}
+                    <div className="flex items-center justify-between gap-2">
+                      {/* Price */}
+                      <span className="font-extrabold text-base sm:text-lg leading-none"
+                        style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                        Rs.&nbsp;{(item.price * item.qty).toLocaleString()}
+                      </span>
 
-                      {/* Price + delete */}
-                      <div className="flex items-center gap-3">
-                        <span className="font-extrabold text-base"
-                          style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                          Rs. {(item.price * item.qty).toLocaleString()}
-                        </span>
+                      {/* Qty + delete */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center rounded-lg overflow-hidden"
+                          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)" }}>
+                          <button onClick={() => updateQty(item.id, item.qty - 1)}
+                            className="w-8 h-8 flex items-center justify-center transition-all"
+                            style={{ color: "rgba(148,163,184,0.5)" }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.5)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                            <Minus size={11} />
+                          </button>
+                          <span className="w-7 text-center text-sm font-bold" style={{ color: "#e2e8f0" }}>{item.qty}</span>
+                          <button onClick={() => updateQty(item.id, item.qty + 1)}
+                            className="w-8 h-8 flex items-center justify-center transition-all"
+                            style={{ color: "rgba(148,163,184,0.5)" }}
+                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; }}
+                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.5)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                            <Plus size={11} />
+                          </button>
+                        </div>
                         <button onClick={() => removeFromCart(item.id)}
-                          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150"
-                          style={{ color: "rgba(148,163,184,0.4)" }}
-                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
-                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.4)"; }}>
-                          <Trash2 size={14} />
+                          className="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-150 shrink-0"
+                          style={{ color: "rgba(148,163,184,0.4)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.2)"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.4)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}>
+                          <Trash2 size={13} />
                         </button>
                       </div>
                     </div>
