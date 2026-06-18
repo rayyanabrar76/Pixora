@@ -104,7 +104,7 @@ export default function Header() {
     <div className="sticky top-0 z-50">
       {/* Announcement bar */}
       {showBar && (
-        <div className="overflow-hidden relative"
+        <div className="hidden sm:block overflow-hidden relative"
           style={{
             background: "linear-gradient(90deg,#0a0f1e,#0d1535,#0a0f1e)",
             borderBottom: "1px solid rgba(37,99,235,0.25)",
