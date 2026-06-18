@@ -386,12 +386,12 @@ export default function Header() {
                                   style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                                   Rs. {(item.price * item.qty).toLocaleString()}
                                 </span>
-                                <button onClick={() => removeFromCart(item.id)}
-                                  className="w-6 h-6 rounded-lg flex items-center justify-center transition-all"
-                                  style={{ color: "rgba(100,116,139,0.4)" }}
-                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.1)"; }}
-                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.4)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                                  <Trash2 size={12} />
+                                <button type="button" onClick={(e) => { e.stopPropagation(); removeFromCart(item.id); }}
+                                  className="w-9 h-9 rounded-xl flex items-center justify-center transition-all"
+                                  style={{ color: "rgba(100,116,139,0.5)", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}
+                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(239,68,68,0.2)"; }}
+                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.5)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.07)"; }}>
+                                  <Trash2 size={14} />
                                 </button>
                               </div>
                             </li>
