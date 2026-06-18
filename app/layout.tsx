@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { CartProvider } from "@/context/CartContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import TopProgress from "@/components/TopProgress";
 
 export const metadata: Metadata = {
   title: "Pixora — Digital Services",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="en">
         <body className="min-h-screen flex flex-col">
           <CartProvider>
+            <TopProgress />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />

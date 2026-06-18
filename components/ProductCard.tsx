@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { Service } from "@/lib/services";
 import { ShoppingCart, Check, Eye } from "lucide-react";
@@ -9,12 +10,14 @@ import ServiceBanner from "@/components/ServiceBanner";
 import QuickViewModal from "@/components/QuickViewModal";
 
 export default function ProductCard({ service }: { service: Service }) {
+  const router = useRouter();
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
   const [quickView, setQuickView] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  const handleAdd = () => {
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
     addToCart(service);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
@@ -39,9 +42,6 @@ export default function ProductCard({ service }: { service: Service }) {
       {/* Card body */}
       <div className="relative rounded-2xl overflow-hidden flex flex-col" style={{ background: "linear-gradient(160deg,#0f172a 0%,#0c1525 100%)" }}>
 
-        {/* Full-card link */}
-        <Link href={`/shop/${service.slug}`} className="absolute inset-0 z-0" aria-label={service.name} />
-
         {/* Badge */}
         {service.badge && (
           <span className="absolute top-4 left-4 z-10 text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider"
@@ -50,39 +50,47 @@ export default function ProductCard({ service }: { service: Service }) {
           </span>
         )}
 
-        {/* Banner */}
-        <div className="h-52 overflow-hidden relative shrink-0">
+        {/* Banner — mobile tap opens Quick View; desktop click navigates, hover shows Quick View overlay */}
+        <div
+          className="h-52 overflow-hidden relative shrink-0 cursor-pointer hidden sm:block"
+          onClick={() => router.push(`/shop/${service.slug}`)}>
           <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to bottom,transparent 40%,#0c1525 100%)" }} />
           <ServiceBanner name={service.name} icon={service.icon} category={service.category} />
 
-          {/* Mobile: full banner tap area opens Quick View */}
-          <button
-            className="absolute inset-0 z-20 sm:hidden"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
-            aria-label="Quick View"
-          />
-
-          {/* Mobile: "Quick View" label at bottom of banner */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-30 sm:hidden pointer-events-none">
-            <span className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full text-white"
-              style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
-              <Eye size={11} /> Quick View
-            </span>
-          </div>
-
-          {/* Desktop: hover overlay */}
-          <div className="absolute inset-0 z-20 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          {/* Desktop: hover overlay — container is pointer-events-none so banner click still fires */}
+          <div className="absolute inset-0 z-20 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
-              className="relative z-10 flex items-center gap-2 font-bold text-xs px-5 py-2.5 rounded-full transition-all hover:scale-105 text-white"
+              onClick={(e) => { e.stopPropagation(); setQuickView(true); }}
+              className="pointer-events-auto flex items-center gap-2 font-bold text-xs px-5 py-2.5 rounded-full transition-all hover:scale-105 text-white"
               style={{ background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.2)", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
               <Eye size={13} /> Quick View
             </button>
           </div>
         </div>
 
-        {/* Info */}
-        <div className="px-6 pb-6 pt-3 flex flex-col flex-1">
+        {/* Banner — mobile version */}
+        <div className="h-52 overflow-hidden relative shrink-0 sm:hidden">
+          <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to bottom,transparent 40%,#0c1525 100%)" }} />
+          <ServiceBanner name={service.name} icon={service.icon} category={service.category} />
+
+          {/* Mobile: full banner tap area opens Quick View */}
+          <button
+            className="absolute inset-0 z-20"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
+            aria-label="Quick View"
+          />
+
+          {/* Mobile: "Quick View" label at bottom of banner */}
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-30 pointer-events-none">
+            <span className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full text-white"
+              style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+              <Eye size={11} /> Quick View
+            </span>
+          </div>
+        </div>
+
+        {/* Info — entire section is a Link that navigates to product page */}
+        <Link href={`/shop/${service.slug}`} className="px-6 pb-6 pt-3 flex flex-col flex-1">
           {/* Category */}
           <span className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#60a5fa" }}>
             {service.category}
@@ -100,7 +108,7 @@ export default function ProductCard({ service }: { service: Service }) {
           <div className="h-px mb-5" style={{ background: "rgba(255,255,255,0.06)" }} />
 
           {/* Bottom row */}
-          <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>Starting at</p>
               <span className="text-xl font-extrabold"
@@ -123,7 +131,7 @@ export default function ProductCard({ service }: { service: Service }) {
               {added ? "Added!" : "Add to Cart"}
             </button>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
 
