@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createPortal } from "react-dom";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
+import { useSignIn, useSignUp, useClerk } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { X, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
 import { PMark } from "@/components/Logo";
 
@@ -39,6 +40,17 @@ export default function AuthModal({ onClose }: Props) {
 
   const { signIn } = useSignIn();
   const { signUp } = useSignUp();
+  const { client } = useClerk();
+  const router = useRouter();
+
+  const signInWithGoogle = async () => {
+    if (!client?.signIn) return;
+    await client.signIn.authenticateWithRedirect({
+      strategy: "oauth_google",
+      redirectUrl: `${window.location.origin}/sso-callback`,
+      redirectUrlComplete: `${window.location.origin}/`,
+    });
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +58,9 @@ export default function AuthModal({ onClose }: Props) {
     setLoginLoading(true); setLoginError("");
     const { error } = await signIn.password({ emailAddress: loginEmail, password: loginPassword });
     if (error) { setLoginError(error.message ?? "Invalid email or password."); setLoginLoading(false); return; }
-    if (signIn.status === "complete") { await signIn.finalize(); onClose(); }
+    if (signIn.status === "complete") {
+      await signIn.finalize({ navigate: () => { onClose(); router.refresh(); } });
+    }
     setLoginLoading(false);
   };
 
@@ -67,7 +81,9 @@ export default function AuthModal({ onClose }: Props) {
     setVerifyLoading(true); setVerifyError("");
     const { error } = await signUp.verifications.verifyEmailCode({ code });
     if (error) { setVerifyError(error.message ?? "Incorrect code."); setVerifyLoading(false); return; }
-    if (signUp.status === "complete") { await signUp.finalize(); onClose(); }
+    if (signUp.status === "complete") {
+      await signUp.finalize({ navigate: () => { onClose(); router.refresh(); } });
+    }
     setVerifyLoading(false);
   };
 
@@ -159,6 +175,27 @@ export default function AuthModal({ onClose }: Props) {
               ))}
             </div>
 
+            {/* Google button — shared for both login/register */}
+            <button type="button" onClick={signInWithGoogle}
+              className="w-full flex items-center justify-center gap-3 py-2.5 rounded-xl font-semibold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] mb-2"
+              style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#e2e8f0" }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)"}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"}>
+              <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+                <path d="M47.532 24.552c0-1.636-.132-3.2-.388-4.704H24.48v9.02h12.984c-.56 2.996-2.24 5.532-4.764 7.244v6.016h7.716c4.516-4.164 7.116-10.3 7.116-17.576z" fill="#4285F4"/>
+                <path d="M24.48 48c6.48 0 11.916-2.148 15.888-5.836l-7.716-6.016c-2.148 1.436-4.896 2.284-8.172 2.284-6.284 0-11.604-4.244-13.5-9.952H3.016v6.212C6.972 42.916 15.116 48 24.48 48z" fill="#34A853"/>
+                <path d="M10.98 28.48A14.46 14.46 0 0 1 10.2 24c0-1.564.268-3.08.78-4.48V13.308H3.016A23.964 23.964 0 0 0 .48 24c0 3.868.928 7.528 2.536 10.692L10.98 28.48z" fill="#FBBC05"/>
+                <path d="M24.48 9.568c3.536 0 6.704 1.216 9.2 3.596l6.892-6.892C36.388 2.38 30.952 0 24.48 0 15.116 0 6.972 5.084 3.016 13.308l7.964 6.212c1.896-5.708 7.216-9.952 13.5-9.952z" fill="#EA4335"/>
+              </svg>
+              Continue with Google
+            </button>
+
+            <div className="flex items-center gap-3 my-1">
+              <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+              <span className="text-[11px]" style={{ color: "rgba(100,116,139,0.6)" }}>or</span>
+              <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+            </div>
+
             {view === "login" ? (
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
@@ -222,6 +259,7 @@ export default function AuthModal({ onClose }: Props) {
                   By signing up you agree to our{" "}
                   <a href="#" className="transition-colors" style={{ color: "#60a5fa" }}>privacy policy</a>.
                 </p>
+                <div id="clerk-captcha" />
                 {regError && <p className="text-red-400 text-sm">{regError}</p>}
                 <button type="submit" disabled={regLoading}
                   className="w-full flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-50 mt-2"

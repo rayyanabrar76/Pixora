@@ -292,12 +292,53 @@ export default function Hero() {
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 items-center">
+      <div className="absolute bottom-14 left-1/2 -translate-x-1/2 flex gap-2 items-center">
         {SLIDES.map((_, i) => (
           <button key={i} onClick={() => goTo(i)}
             className={`rounded-full transition-all duration-300 ${i === current ? "w-7 h-2.5 bg-white" : "w-2.5 h-2.5 bg-white/30 hover:bg-white/60"}`}
           />
         ))}
+      </div>
+
+      {/* Brand Marquee strip */}
+      <div className="absolute bottom-0 left-0 right-0 h-10 overflow-hidden"
+        style={{ background: "rgba(0,0,0,0.35)", borderTop: "1px solid rgba(255,255,255,0.07)", backdropFilter: "blur(8px)" }}>
+        <style>{`
+          @keyframes hero-marquee { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+        `}</style>
+        {/* Left/right fades */}
+        <div className="absolute left-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to right,rgba(0,0,0,0.5),transparent)" }} />
+        <div className="absolute right-0 top-0 bottom-0 w-20 z-10 pointer-events-none"
+          style={{ background: "linear-gradient(to left,rgba(0,0,0,0.5),transparent)" }} />
+
+        <div className="flex items-center h-full"
+          style={{ animation: "hero-marquee 40s linear infinite", whiteSpace: "nowrap", width: "max-content" }}>
+          {[
+            "Empowering top brands with world-class digital solutions",
+            "Trusted by 200+ growing businesses across Pakistan",
+            "We build brands that people remember and trust",
+            "Fast delivery — most services in 24–48 hours",
+            "Premium identities designed to make you stand out",
+            "From startups to enterprises — we scale with you",
+            "5-star rated service — 100% client satisfaction guaranteed",
+            "Your brand is our passion, your growth is our mission",
+            "Empowering top brands with world-class digital solutions",
+            "Trusted by 200+ growing businesses across Pakistan",
+            "We build brands that people remember and trust",
+            "Fast delivery — most services in 24–48 hours",
+            "Premium identities designed to make you stand out",
+            "From startups to enterprises — we scale with you",
+            "5-star rated service — 100% client satisfaction guaranteed",
+            "Your brand is our passion, your growth is our mission",
+          ].map((text, i) => (
+            <span key={i} className="inline-flex items-center gap-3 px-5 text-xs font-medium"
+              style={{ color: "rgba(255,255,255,0.55)" }}>
+              <span style={{ color: "#60a5fa", fontSize: "8px", flexShrink: 0 }}>✦</span>
+              {text}
+            </span>
+          ))}
+        </div>
       </div>
 
     </section>

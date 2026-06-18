@@ -5,7 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import {
-  ShoppingCart, Menu, X, Search, User,
+  ShoppingCart, Menu, X, Search, User, ArrowRight,
   CreditCard, Star, Image, Smartphone, Laptop, Building, Mail, Phone,
   ShoppingBag, Share2, Camera, MapPin, FileText, TrendingUp,
   Settings, Monitor, MessageCircle, Users, type LucideIcon,
@@ -13,7 +13,7 @@ import {
 import { SERVICES } from "@/lib/services";
 import Logo from "@/components/Logo";
 import ServiceBanner from "@/components/ServiceBanner";
-import { Show, UserButton } from "@clerk/nextjs";
+import { Show, useUser, useClerk } from "@clerk/nextjs";
 import AuthModal from "@/components/AuthModal";
 
 const NAV = [
@@ -85,25 +85,25 @@ export default function Header() {
   const [showBar, setShowBar] = useState(true);
 
   const MARQUEE_ITEMS = [
-    { icon: "✦", text: "Empowering top brands with world-class digital solutions" },
-    { icon: "👑", text: "Trusted by 200+ growing businesses across Pakistan" },
-    { icon: "🎨", text: "Logo Design with unlimited revisions — from ₨1,500" },
-    { icon: "⚡", text: "Most services delivered in 24–48 hours" },
-    { icon: "✦", text: "New: Reels & Short Video Editing — from ₨2,500" },
-    { icon: "🏆", text: "Premium brand identities that make you stand out" },
-    { icon: "🎯", text: "Free consultation — get a custom quote today" },
-    { icon: "🚀", text: "Landing pages built to convert — from ₨8,000" },
-    { icon: "✦", text: "We build brands that people remember and trust" },
-    { icon: "💼", text: "From startups to enterprises — we scale with you" },
-    { icon: "🌟", text: "5★ rated service — 100% client satisfaction guaranteed" },
-    { icon: "✦", text: "Google My Business setup — boost your local visibility" },
+    "Empowering top brands with world-class digital solutions",
+    "Trusted by 200+ growing businesses across Pakistan",
+    "Logo Design with unlimited revisions — from Rs.1,500",
+    "Most services delivered in 24–48 hours",
+    "New: Reels & Short Video Editing — from Rs.2,500",
+    "Premium brand identities that make you stand out",
+    "Free consultation — get a custom quote today",
+    "Landing pages built to convert — from Rs.8,000",
+    "We build brands that people remember and trust",
+    "From startups to enterprises — we scale with you",
+    "5-star rated service — 100% client satisfaction guaranteed",
+    "Google My Business setup — boost your local visibility",
   ];
 
   return (
     <div className="sticky top-0 z-50">
       {/* Announcement bar */}
       {showBar && (
-        <div className="overflow-hidden"
+        <div className="overflow-hidden relative"
           style={{
             background: "linear-gradient(90deg,#0a0f1e,#0d1535,#0a0f1e)",
             borderBottom: "1px solid rgba(37,99,235,0.25)",
@@ -123,28 +123,24 @@ export default function Header() {
             .marquee-track:hover { animation-play-state: paused; }
           `}</style>
 
-          {/* Left fade */}
           <div className="absolute left-0 top-0 bottom-0 w-16 z-10 pointer-events-none"
             style={{ background: "linear-gradient(to right,#0a0f1e,transparent)" }} />
-          {/* Right fade + close btn space */}
           <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
             style={{ background: "linear-gradient(to left,#0a0f1e 60%,transparent)" }} />
 
-          {/* Scrolling track — two copies for seamless loop */}
           <div className="flex items-center h-full overflow-hidden">
             <div className="marquee-track">
-              {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+              {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((text, i) => (
                 <span key={i} className="flex items-center gap-2 whitespace-nowrap px-8 text-[11px] font-medium"
                   style={{ color: "rgba(203,213,225,0.75)" }}>
-                  <span className="text-blue-400 text-[10px]">{item.icon}</span>
-                  {item.text}
-                  <span className="text-blue-500/40 mx-2">◆</span>
+                  <span style={{ color: "#60a5fa", fontSize: "8px" }}>✦</span>
+                  {text}
+                  <span style={{ color: "rgba(96,165,250,0.3)", marginLeft: "8px" }}>◆</span>
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Dismiss */}
           <button onClick={() => setShowBar(false)}
             className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-5 h-5 rounded-full flex items-center justify-center transition-all"
             style={{ background: "rgba(255,255,255,0.07)", color: "rgba(148,163,184,0.6)" }}
@@ -272,9 +268,7 @@ export default function Header() {
               </button>
             </Show>
             <Show when="signed-in">
-              <div className="w-9 h-9 flex items-center justify-center">
-                <UserButton />
-              </div>
+              <UserMenu />
             </Show>
             {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
@@ -299,72 +293,118 @@ export default function Header() {
               </button>
 
               {cartOpen && (
-                <div className="absolute right-0 top-12 w-80 rounded-2xl overflow-hidden"
-                  style={{ background: "#0d1525", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
-                  <div className="flex items-center justify-between px-4 py-3.5"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                    <span className="font-bold text-sm" style={{ color: "#e2e8f0" }}>
-                      Cart
-                      {totalItems > 0 && <span className="ml-2 text-xs font-normal" style={{ color: "#60a5fa" }}>₨ {totalPrice.toLocaleString()}</span>}
-                    </span>
-                    <button onClick={() => setCartOpen(false)} style={{ color: "rgba(100,116,139,0.8)" }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#e2e8f0"}
-                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.8)"}>
-                      <X size={16} />
+                <div className="absolute right-0 top-12 w-96 rounded-2xl overflow-hidden"
+                  style={{ background: "#080f20", border: "1px solid rgba(255,255,255,0.09)", boxShadow: "0 24px 72px rgba(0,0,0,0.65)" }}>
+
+                  {/* Gradient top bar */}
+                  <div className="h-0.75" style={{ background: "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)" }} />
+
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-5 py-4"
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div className="flex items-center gap-2.5">
+                      <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
+                      <span className="font-extrabold text-sm" style={{ color: "#f1f5f9" }}>Your Cart</span>
+                      {totalItems > 0 && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                          style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa", border: "1px solid rgba(37,99,235,0.3)" }}>
+                          {totalItems} item{totalItems !== 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
+                    <button onClick={() => setCartOpen(false)}
+                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
+                      style={{ color: "rgba(100,116,139,0.6)", background: "transparent" }}
+                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
+                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.6)"; }}>
+                      <X size={14} />
                     </button>
                   </div>
 
                   {items.length === 0 ? (
-                    <div className="px-4 py-12 text-center">
-                      <ShoppingCart size={36} className="mx-auto mb-3" style={{ color: "rgba(255,255,255,0.07)" }} />
-                      <p className="text-sm" style={{ color: "rgba(100,116,139,0.7)" }}>Your cart is empty</p>
+                    <div className="px-5 py-14 text-center">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                        <ShoppingCart size={22} style={{ color: "rgba(100,116,139,0.4)" }} />
+                      </div>
+                      <p className="font-bold text-sm mb-1" style={{ color: "#e2e8f0" }}>Cart is empty</p>
+                      <p className="text-xs mb-5" style={{ color: "rgba(100,116,139,0.6)" }}>Add services to get started</p>
+                      <Link href="/shop" onClick={() => setCartOpen(false)}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg text-white transition-all hover:scale-[1.03]"
+                        style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                        Browse Services <ArrowRight size={12} />
+                      </Link>
                     </div>
                   ) : (
                     <>
-                      <ul className="max-h-64 overflow-y-auto divide-y" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                        {items.map((item) => (
-                          <li key={item.id} className="flex items-center gap-3 px-4 py-3">
+                      {/* Items list */}
+                      <ul className="max-h-72 overflow-y-auto">
+                        {items.map((item, idx) => (
+                          <li key={item.id} className="flex items-center gap-3 px-5 py-3.5 transition-colors"
+                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"}
+                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
+                            {/* Thumbnail */}
                             <Link href={`/shop/${item.slug}`} onClick={() => setCartOpen(false)}
-                              className="w-12 h-12 rounded-xl overflow-hidden shrink-0 hover:opacity-80 transition-opacity">
+                              className="w-11 h-11 rounded-xl overflow-hidden shrink-0 transition-opacity hover:opacity-80"
+                              style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
                               <ServiceBanner name={item.name} icon={item.icon} category={item.category} />
                             </Link>
+                            {/* Info */}
                             <div className="flex-1 min-w-0">
+                              <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>{item.category}</span>
                               <Link href={`/shop/${item.slug}`} onClick={() => setCartOpen(false)}
-                                className="text-sm font-semibold truncate leading-tight block transition-colors"
+                                className="block text-sm font-semibold truncate leading-snug transition-colors"
                                 style={{ color: "#e2e8f0" }}
-                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#60a5fa"}
+                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#93c5fd"}
                                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#e2e8f0"}>
                                 {item.name}
                               </Link>
-                              <p className="text-xs mt-0.5" style={{ color: "rgba(100,116,139,0.7)" }}>{item.qty} × ₨ {item.price.toLocaleString()}</p>
+                              <p className="text-[11px] mt-0.5" style={{ color: "rgba(100,116,139,0.6)" }}>
+                                {item.qty} × Rs. {item.price.toLocaleString()}
+                              </p>
                             </div>
-                            <button onClick={() => removeFromCart(item.id)}
-                              className="shrink-0 ml-1 transition-colors"
-                              style={{ color: "rgba(100,116,139,0.5)" }}
-                              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#f87171"}
-                              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.5)"}>
-                              <X size={15} />
-                            </button>
+                            {/* Price + remove */}
+                            <div className="flex flex-col items-end gap-1.5 shrink-0">
+                              <span className="text-sm font-extrabold"
+                                style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                                Rs. {(item.price * item.qty).toLocaleString()}
+                              </span>
+                              <button onClick={() => removeFromCart(item.id)}
+                                className="w-5 h-5 rounded flex items-center justify-center transition-all"
+                                style={{ color: "rgba(100,116,139,0.4)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.1)"; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.4)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                                <X size={11} />
+                              </button>
+                            </div>
                           </li>
                         ))}
                       </ul>
 
-                      <div className="px-4 py-3 flex justify-between items-center"
-                        style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-                        <span className="text-sm" style={{ color: "rgba(148,163,184,0.7)" }}>Subtotal</span>
-                        <span className="font-extrabold text-sm" style={{ color: "#e2e8f0" }}>₨ {totalPrice.toLocaleString()}</span>
+                      {/* Subtotal */}
+                      <div className="px-5 py-3.5 flex items-center justify-between"
+                        style={{ borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.6)" }}>Subtotal</span>
+                        <span className="font-extrabold text-base"
+                          style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                          Rs. {totalPrice.toLocaleString()}
+                        </span>
                       </div>
 
-                      <div className="px-4 pb-4 flex flex-col gap-2">
+                      {/* Actions */}
+                      <div className="px-5 py-4 flex flex-col gap-2.5">
                         <Link href="/cart" onClick={() => setCartOpen(false)}
-                          className="block text-center font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.02]"
-                          style={{ background: "rgba(255,255,255,0.08)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.1)" }}>
+                          className="flex items-center justify-center gap-2 font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01]"
+                          style={{ background: "rgba(255,255,255,0.06)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.1)" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"}
+                          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}>
                           View Cart
                         </Link>
                         <Link href="/contact" onClick={() => setCartOpen(false)}
-                          className="block text-center font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.02] text-white"
-                          style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 16px rgba(37,99,235,0.4)" }}>
-                          Checkout
+                          className="flex items-center justify-center gap-2 font-bold py-2.5 rounded-xl text-sm text-white transition-all hover:scale-[1.01]"
+                          style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 18px rgba(37,99,235,0.45)" }}>
+                          Checkout <ArrowRight size={13} />
                         </Link>
                       </div>
                     </>
@@ -397,6 +437,89 @@ export default function Header() {
           </div>
         )}
       </header>
+    </div>
+  );
+}
+
+/* ─── Custom User Menu ────────────────────────────────── */
+function UserMenu() {
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  if (!user) return null;
+
+  const initials = ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase() || user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "U";
+  const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
+  const email = user.emailAddresses[0]?.emailAddress ?? "";
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Avatar button */}
+      <button onClick={() => setOpen(v => !v)}
+        className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200"
+        style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)", outline: "2px solid transparent", outlineOffset: "2px" }}
+        onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(96,165,250,0.9)"}
+        onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(96,165,250,0.4)"}>
+        {user.imageUrl
+          ? <img src={user.imageUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          : <span className="text-white text-xs font-extrabold">{initials}</span>
+        }
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute right-0 top-12 w-72 rounded-2xl overflow-hidden"
+          style={{ background: "#0d1525", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)", zIndex: 100 }}>
+
+          {/* Top accent */}
+          <div className="h-px w-full" style={{ background: "linear-gradient(to right,transparent,rgba(37,99,235,0.6),transparent)" }} />
+
+          {/* Profile row */}
+          <div className="flex items-center gap-3 px-4 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 ring-2 ring-blue-500/30"
+              style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)" }}>
+              {user.imageUrl
+                ? <img src={user.imageUrl} alt={name} className="w-full h-full object-cover" />
+                : <span className="w-full h-full flex items-center justify-center text-white font-extrabold text-sm">{initials}</span>
+              }
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-sm truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+              <p className="text-xs truncate mt-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>{email}</p>
+            </div>
+          </div>
+
+          {/* Menu items */}
+          <div className="py-2">
+            <button onClick={() => { signOut(); setOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+              style={{ color: "rgba(203,213,225,0.8)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f87171" }}>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Sign Out
+            </button>
+          </div>
+
+          {/* Footer */}
+          <div className="px-4 py-2.5 flex items-center gap-1.5" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+            <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+            <span className="text-[10px]" style={{ color: "rgba(100,116,139,0.6)" }}>Secured by Clerk</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

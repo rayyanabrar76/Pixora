@@ -5,7 +5,14 @@ import { PMark } from "@/components/Logo";
 import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
-const POLICIES = ["Shipping Policy", "Refund Policy", "Return Policy", "Terms of Service", "Privacy Policy", "FAQ"];
+const POLICIES = [
+  { label: "Shipping Policy", href: "/shipping" },
+  { label: "Refund Policy",   href: "/refund"   },
+  { label: "Return Policy",   href: "/returns"  },
+  { label: "Terms of Service",href: "/terms"    },
+  { label: "Privacy Policy",  href: "/privacy"  },
+  { label: "FAQ",             href: "/faq"      },
+];
 const SERVICES_LIST = ["Logo Design", "Landing Page", "Social Media Management", "SEO Optimization", "E-Commerce Store", "Email Marketing", "Google My Business", "Photography"];
 
 export default function Footer() {
@@ -88,13 +95,13 @@ export default function Footer() {
 
           <h4 className="text-white font-bold mt-6 mb-5 text-sm uppercase tracking-widest after:block after:mt-2 after:w-8 after:h-0.5 after:bg-blue-600">Policies</h4>
           <ul className="space-y-3">
-            {POLICIES.map((p) => (
-              <li key={p}>
-                <a href="#"
+            {POLICIES.map(({ label, href }) => (
+              <li key={href}>
+                <Link href={href}
                   className="text-sm text-gray-500 hover:text-blue-400 transition-colors flex items-center gap-2.5 group">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-600/40 group-hover:bg-blue-500 transition-colors shrink-0" />
-                  {p}
-                </a>
+                  {label}
+                </Link>
               </li>
             ))}
           </ul>
