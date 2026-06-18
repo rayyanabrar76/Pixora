@@ -1,9 +1,13 @@
-import { ReactNode } from "react";
+import { ReactNode, useId } from "react";
 
 export default function ServiceBanner({ name, icon, category }: {
   name: string; icon: string; category: string;
 }) {
-  const gradId = `g${icon.replace(/-/g, "")}${category.replace(/\s/g,"")}`;
+  // useId gives each rendered instance a unique ID — prevents gradient/clipPath
+  // collisions when multiple ServiceBanners appear on the same page.
+  const uid = useId().replace(/:/g, "");
+  const gradId = `grad${uid}`;
+  const clipId = `clip${uid}`;
   const words = name.toUpperCase().split(" ");
   const lineH = 20;
   const startY = Math.max(24, (120 - words.length * lineH) / 2 + lineH);
@@ -20,7 +24,7 @@ export default function ServiceBanner({ name, icon, category }: {
           <stop offset="0%" stopColor={gradStart(category)} />
           <stop offset="100%" stopColor={gradEnd(category)} />
         </linearGradient>
-        <clipPath id={`clip-${gradId}`}>
+        <clipPath id={clipId}>
           <rect x="0" y="0" width="150" height="156" />
         </clipPath>
       </defs>
@@ -43,8 +47,8 @@ export default function ServiceBanner({ name, icon, category }: {
         <circle cx="22" cy="20" r="2.5" fill="#60a5fa" />
       </g>
 
-      {/* Service name — left column, clipped to left half so it never overlaps the illustration */}
-      <g clipPath={`url(#clip-${gradId})`}>
+      {/* Service name — left column, clipped so it never overlaps the illustration */}
+      <g clipPath={`url(#${clipId})`}>
         {words.map((word, i) => (
           <text key={i} x="14" y={startY + i * lineH}
             fill="white"
