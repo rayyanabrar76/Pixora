@@ -55,8 +55,23 @@ export default function ProductCard({ service }: { service: Service }) {
           <div className="absolute inset-0 z-10" style={{ background: "linear-gradient(to bottom,transparent 40%,#0c1525 100%)" }} />
           <ServiceBanner name={service.name} icon={service.icon} category={service.category} />
 
-          {/* Quick View button — desktop hover only, hidden on mobile to prevent tap interference */}
-          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 pointer-events-none sm:pointer-events-auto">
+          {/* Mobile: full banner tap area opens Quick View */}
+          <button
+            className="absolute inset-0 z-20 sm:hidden"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
+            aria-label="Quick View"
+          />
+
+          {/* Mobile: "Quick View" label at bottom of banner */}
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-30 sm:hidden pointer-events-none">
+            <span className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full text-white"
+              style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
+              <Eye size={11} /> Quick View
+            </span>
+          </div>
+
+          {/* Desktop: hover overlay */}
+          <div className="absolute inset-0 z-20 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickView(true); }}
               className="relative z-10 flex items-center gap-2 font-bold text-xs px-5 py-2.5 rounded-full transition-all hover:scale-105 text-white"
