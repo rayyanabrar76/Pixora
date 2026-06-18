@@ -35,7 +35,6 @@ export default function Header() {
   const [query,      setQuery]      = useState("");
   const inputRef  = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
-  const cartRef   = useRef<HTMLDivElement>(null);
 
   const results = query.trim().length > 0
     ? SERVICES.filter((s) =>
@@ -49,13 +48,6 @@ export default function Header() {
     if (searchOpen) inputRef.current?.focus();
   }, [searchOpen]);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (cartRef.current && !cartRef.current.contains(e.target as Node)) setCartOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -314,7 +306,7 @@ export default function Header() {
             {authOpen && <AuthModal onClose={() => setAuthOpen(false)} />}
 
             {/* Cart */}
-            <div ref={cartRef} className="relative">
+            <div className="relative">
               <button onClick={toggleCart}
                 className="relative w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200"
                 style={{
