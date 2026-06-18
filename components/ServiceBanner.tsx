@@ -40,15 +40,20 @@ export default function ServiceBanner({ name, icon, category }: {
         <circle cx="22" cy="20" r="2.5" fill="#60a5fa" />
       </g>
 
-      {/* Service name — left column */}
-      {words.map((word, i) => (
-        <text key={i} x="14" y={startY + i * lineH}
-          fill="white"
-          fontFamily="system-ui,-apple-system,sans-serif"
-          fontSize="17" fontWeight="800" letterSpacing="0.3">
-          {word}
-        </text>
-      ))}
+      {/* Service name — left column, clipped so text never overflows */}
+      <clipPath id={`clip-${gradId}`}>
+        <rect x="0" y="0" width="150" height="156" />
+      </clipPath>
+      <g clipPath={`url(#clip-${gradId})`}>
+        {words.map((word, i) => (
+          <text key={i} x="14" y={startY + i * lineH}
+            fill="white"
+            fontFamily="system-ui,-apple-system,sans-serif"
+            fontSize="16" fontWeight="800" letterSpacing="0.3">
+            {word.length > 10 ? word.slice(0, 10) + "…" : word}
+          </text>
+        ))}
+      </g>
 
       {/* Category label */}
       <text x="14" y="150"

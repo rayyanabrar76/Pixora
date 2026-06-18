@@ -59,10 +59,11 @@ export default function ServiceDetail() {
         </Link>
 
         {/* Main grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-6 mb-20">
 
-          {/* Banner — takes 3/5 width */}
-          <div className="lg:col-span-3 rounded-2xl overflow-hidden relative p-px" style={{ height: "400px", background: "linear-gradient(135deg,rgba(37,99,235,0.4),rgba(79,70,229,0.2),rgba(255,255,255,0.05))" }}>
+          {/* Banner — takes 3/5 width, short on mobile */}
+          <div className="sm:col-span-3 rounded-2xl overflow-hidden relative p-px"
+            style={{ height: "clamp(180px, 45vw, 420px)", background: "linear-gradient(135deg,rgba(37,99,235,0.4),rgba(79,70,229,0.2),rgba(255,255,255,0.05))" }}>
             <div className="rounded-2xl overflow-hidden h-full">
               <ServiceBanner name={service.name} icon={service.icon} category={service.category} />
             </div>
@@ -75,7 +76,7 @@ export default function ServiceDetail() {
           </div>
 
           {/* Details panel — takes 2/5 width */}
-          <div className="lg:col-span-2 rounded-2xl p-8 flex flex-col"
+          <div className="sm:col-span-2 rounded-2xl p-5 sm:p-8 flex flex-col"
             style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
 
             {/* Category + badge */}
