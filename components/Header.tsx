@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import {
@@ -292,124 +293,141 @@ export default function Header() {
                 )}
               </button>
 
-              {cartOpen && (
-                <div className="absolute right-0 top-12 w-96 rounded-2xl overflow-hidden"
-                  style={{ background: "#080f20", border: "1px solid rgba(255,255,255,0.09)", boxShadow: "0 24px 72px rgba(0,0,0,0.65)" }}>
+              {cartOpen && typeof document !== "undefined" && createPortal(
+                <>
+                  {/* Backdrop */}
+                  <div
+                    onClick={() => setCartOpen(false)}
+                    style={{
+                      position: "fixed", inset: 0, zIndex: 9998,
+                      background: "rgba(2,6,18,0.7)",
+                      backdropFilter: "blur(4px)",
+                    }}
+                  />
 
-                  {/* Gradient top bar */}
-                  <div className="h-0.75" style={{ background: "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)" }} />
+                  {/* Panel — right-side sheet on all screens */}
+                  <div style={{
+                    position: "fixed", top: 0, right: 0, bottom: 0, zIndex: 9999,
+                    width: "min(100vw, 400px)",
+                    background: "#080f20",
+                    borderLeft: "1px solid rgba(255,255,255,0.09)",
+                    boxShadow: "-24px 0 72px rgba(0,0,0,0.65)",
+                    display: "flex", flexDirection: "column",
+                    animation: "slideInRight 0.28s cubic-bezier(0.16,1,0.3,1)",
+                  }}>
+                    <style>{`@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}`}</style>
 
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-5 py-4"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    <div className="flex items-center gap-2.5">
-                      <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
-                      <span className="font-extrabold text-sm" style={{ color: "#f1f5f9" }}>Your Cart</span>
-                      {totalItems > 0 && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa", border: "1px solid rgba(37,99,235,0.3)" }}>
-                          {totalItems} item{totalItems !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </div>
-                    <button onClick={() => setCartOpen(false)}
-                      className="w-7 h-7 rounded-lg flex items-center justify-center transition-all"
-                      style={{ color: "rgba(100,116,139,0.6)", background: "transparent" }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.6)"; }}>
-                      <X size={14} />
-                    </button>
-                  </div>
+                    {/* Gradient top bar */}
+                    <div className="h-0.75 shrink-0" style={{ background: "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)" }} />
 
-                  {items.length === 0 ? (
-                    <div className="px-5 py-14 text-center">
-                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4"
-                        style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                        <ShoppingCart size={22} style={{ color: "rgba(100,116,139,0.4)" }} />
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-5 py-4 shrink-0"
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div className="flex items-center gap-2.5">
+                        <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
+                        <span className="font-extrabold text-sm" style={{ color: "#f1f5f9" }}>Your Cart</span>
+                        {totalItems > 0 && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                            style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa", border: "1px solid rgba(37,99,235,0.3)" }}>
+                            {totalItems} item{totalItems !== 1 ? "s" : ""}
+                          </span>
+                        )}
                       </div>
-                      <p className="font-bold text-sm mb-1" style={{ color: "#e2e8f0" }}>Cart is empty</p>
-                      <p className="text-xs mb-5" style={{ color: "rgba(100,116,139,0.6)" }}>Add services to get started</p>
-                      <Link href="/shop" onClick={() => setCartOpen(false)}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg text-white transition-all hover:scale-[1.03]"
-                        style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
-                        Browse Services <ArrowRight size={12} />
-                      </Link>
+                      <button onClick={() => setCartOpen(false)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                        style={{ color: "rgba(100,116,139,0.6)", background: "transparent" }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "#e2e8f0"; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.6)"; }}>
+                        <X size={16} />
+                      </button>
                     </div>
-                  ) : (
-                    <>
-                      {/* Items list */}
-                      <ul className="max-h-72 overflow-y-auto">
-                        {items.map((item, idx) => (
-                          <li key={item.id} className="flex items-center gap-3 px-5 py-3.5 transition-colors"
-                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
-                            {/* Thumbnail */}
-                            <Link href={`/shop/${item.slug}`} onClick={() => setCartOpen(false)}
-                              className="w-11 h-11 rounded-xl overflow-hidden shrink-0 transition-opacity hover:opacity-80"
-                              style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
-                              <ServiceBanner name={item.name} icon={item.icon} category={item.category} />
-                            </Link>
-                            {/* Info */}
-                            <div className="flex-1 min-w-0">
-                              <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>{item.category}</span>
+
+                    {items.length === 0 ? (
+                      <div className="flex-1 flex flex-col items-center justify-center px-5 text-center">
+                        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
+                          style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                          <ShoppingCart size={24} style={{ color: "rgba(100,116,139,0.4)" }} />
+                        </div>
+                        <p className="font-bold text-sm mb-1" style={{ color: "#e2e8f0" }}>Cart is empty</p>
+                        <p className="text-xs mb-6" style={{ color: "rgba(100,116,139,0.6)" }}>Add services to get started</p>
+                        <Link href="/shop" onClick={() => setCartOpen(false)}
+                          className="inline-flex items-center gap-1.5 text-sm font-bold px-5 py-2.5 rounded-xl text-white transition-all hover:scale-[1.03]"
+                          style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
+                          Browse Services <ArrowRight size={14} />
+                        </Link>
+                      </div>
+                    ) : (
+                      <>
+                        {/* Items list — scrollable */}
+                        <ul className="flex-1 overflow-y-auto">
+                          {items.map((item) => (
+                            <li key={item.id} className="flex items-center gap-3 px-5 py-4 transition-colors"
+                              style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"}
+                              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
                               <Link href={`/shop/${item.slug}`} onClick={() => setCartOpen(false)}
-                                className="block text-sm font-semibold truncate leading-snug transition-colors"
-                                style={{ color: "#e2e8f0" }}
-                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#93c5fd"}
-                                onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "#e2e8f0"}>
-                                {item.name}
+                                className="w-12 h-12 rounded-xl overflow-hidden shrink-0 transition-opacity hover:opacity-80"
+                                style={{ border: "1px solid rgba(255,255,255,0.07)" }}>
+                                <ServiceBanner name={item.name} icon={item.icon} category={item.category} />
                               </Link>
-                              <p className="text-[11px] mt-0.5" style={{ color: "rgba(100,116,139,0.6)" }}>
-                                {item.qty} × Rs. {item.price.toLocaleString()}
-                              </p>
-                            </div>
-                            {/* Price + remove */}
-                            <div className="flex flex-col items-end gap-1.5 shrink-0">
-                              <span className="text-sm font-extrabold"
-                                style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                                Rs. {(item.price * item.qty).toLocaleString()}
-                              </span>
-                              <button onClick={() => removeFromCart(item.id)}
-                                className="w-5 h-5 rounded flex items-center justify-center transition-all"
-                                style={{ color: "rgba(100,116,139,0.4)" }}
-                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.1)"; }}
-                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.4)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                                <X size={11} />
-                              </button>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "#60a5fa" }}>{item.category}</span>
+                                <Link href={`/shop/${item.slug}`} onClick={() => setCartOpen(false)}
+                                  className="block text-sm font-semibold truncate leading-snug"
+                                  style={{ color: "#e2e8f0" }}>
+                                  {item.name}
+                                </Link>
+                                <p className="text-xs mt-0.5" style={{ color: "rgba(100,116,139,0.6)" }}>
+                                  {item.qty} × Rs. {item.price.toLocaleString()}
+                                </p>
+                              </div>
+                              <div className="flex flex-col items-end gap-2 shrink-0">
+                                <span className="text-sm font-extrabold"
+                                  style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                                  Rs. {(item.price * item.qty).toLocaleString()}
+                                </span>
+                                <button onClick={() => removeFromCart(item.id)}
+                                  className="w-6 h-6 rounded-lg flex items-center justify-center transition-all"
+                                  style={{ color: "rgba(100,116,139,0.4)" }}
+                                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.1)"; }}
+                                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.4)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
 
-                      {/* Subtotal */}
-                      <div className="px-5 py-3.5 flex items-center justify-between"
-                        style={{ borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                        <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.6)" }}>Subtotal</span>
-                        <span className="font-extrabold text-base"
-                          style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-                          Rs. {totalPrice.toLocaleString()}
-                        </span>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="px-5 py-4 flex flex-col gap-2.5">
-                        <Link href="/cart" onClick={() => setCartOpen(false)}
-                          className="flex items-center justify-center gap-2 font-bold py-2.5 rounded-xl text-sm transition-all hover:scale-[1.01]"
-                          style={{ background: "rgba(255,255,255,0.06)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.1)" }}
-                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"}
-                          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}>
-                          View Cart
-                        </Link>
-                        <Link href="/contact" onClick={() => setCartOpen(false)}
-                          className="flex items-center justify-center gap-2 font-bold py-2.5 rounded-xl text-sm text-white transition-all hover:scale-[1.01]"
-                          style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 18px rgba(37,99,235,0.45)" }}>
-                          Checkout <ArrowRight size={13} />
-                        </Link>
-                      </div>
-                    </>
-                  )}
-                </div>
+                        {/* Footer — always pinned to bottom */}
+                        <div className="shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                          <div className="px-5 py-3.5 flex items-center justify-between"
+                            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                            <span className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.6)" }}>Subtotal</span>
+                            <span className="font-extrabold text-lg"
+                              style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                              Rs. {totalPrice.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="px-5 py-4 flex flex-col gap-2.5">
+                            <Link href="/cart" onClick={() => setCartOpen(false)}
+                              className="flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-sm transition-all"
+                              style={{ background: "rgba(255,255,255,0.06)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.1)" }}
+                              onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.1)"}
+                              onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}>
+                              View Cart
+                            </Link>
+                            <Link href="/contact" onClick={() => setCartOpen(false)}
+                              className="flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-sm text-white transition-all"
+                              style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 18px rgba(37,99,235,0.45)" }}>
+                              Checkout <ArrowRight size={14} />
+                            </Link>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>,
+                document.body
               )}
             </div>
 
