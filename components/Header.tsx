@@ -51,8 +51,7 @@ export default function Header() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) closeSearch();
-      if (cartRef.current   && !cartRef.current.contains(e.target as Node))   setCartOpen(false);
+      if (cartRef.current && !cartRef.current.contains(e.target as Node)) setCartOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -202,59 +201,100 @@ export default function Header() {
                 <Search size={17} />
               </button>
 
-              {searchOpen && (
-                <div className="absolute right-0 top-12 w-80 rounded-2xl overflow-hidden"
-                  style={{ background: "#0d1525", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
-                  <form onSubmit={handleSubmit} className="flex items-center gap-2 px-4 py-3"
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                    <Search size={14} style={{ color: "rgba(100,116,139,0.8)" }} className="shrink-0" />
-                    <input ref={inputRef} value={query} onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Search services..."
-                      className="flex-1 text-sm outline-none bg-transparent"
-                      style={{ color: "#e2e8f0", caretColor: "#60a5fa" }} />
-                    {query && (
-                      <button type="button" onClick={() => setQuery("")} style={{ color: "rgba(100,116,139,0.8)" }}>
-                        <X size={14} />
+              {searchOpen && typeof document !== "undefined" && createPortal(
+                <>
+                  {/* Backdrop */}
+                  <div onClick={closeSearch}
+                    style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(2,6,18,0.7)", backdropFilter: "blur(6px)" }} />
+
+                  {/* Search panel — top-anchored full width */}
+                  <div style={{
+                    position: "fixed", top: 0, left: 0, right: 0, zIndex: 9999,
+                    background: "#080f20",
+                    borderBottom: "1px solid rgba(255,255,255,0.09)",
+                    boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+                    animation: "slideDown 0.22s cubic-bezier(0.16,1,0.3,1)",
+                  }}>
+                    <style>{`@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}`}</style>
+
+                    {/* Gradient top bar */}
+                    <div className="h-0.75" style={{ background: "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)" }} />
+
+                    {/* Input row */}
+                    <form onSubmit={handleSubmit}
+                      className="flex items-center gap-3 px-4 py-3 max-w-2xl mx-auto">
+                      <Search size={18} style={{ color: "#60a5fa", flexShrink: 0 }} />
+                      <input
+                        ref={inputRef}
+                        value={query}
+                        onChange={e => setQuery(e.target.value)}
+                        placeholder="Search services..."
+                        className="flex-1 text-base outline-none bg-transparent"
+                        style={{ color: "#e2e8f0", caretColor: "#60a5fa" }}
+                      />
+                      {query && (
+                        <button type="button" onClick={() => setQuery("")}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0"
+                          style={{ color: "rgba(100,116,139,0.6)", background: "rgba(255,255,255,0.06)" }}>
+                          <X size={14} />
+                        </button>
+                      )}
+                      <button type="button" onClick={closeSearch}
+                        className="w-8 h-8 rounded-xl flex items-center justify-center transition-all shrink-0 font-bold text-xs"
+                        style={{ color: "rgba(148,163,184,0.6)", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}
+                        onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = "#fff"}
+                        onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.6)"}>
+                        Esc
                       </button>
-                    )}
-                  </form>
-                  {results.length > 0 ? (
-                    <ul className="max-h-72 overflow-y-auto">
-                      {results.map((s) => (
-                        <li key={s.id}>
-                          <button onClick={() => handleSelect(s.slug)}
-                            className="w-full flex items-start gap-3 px-4 py-3 text-left transition-colors"
-                            style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-                            onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.05)"}
-                            onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
-                            <span className="mt-0.5 shrink-0" style={{ color: "#60a5fa" }}>{getServiceIcon(s.icon)}</span>
-                            <div className="min-w-0">
-                              <div className="text-sm font-semibold truncate" style={{ color: "#e2e8f0" }}>{s.name}</div>
-                              <div className="text-xs mt-0.5" style={{ color: "#60a5fa" }}>{s.category} · {s.priceLabel}</div>
-                            </div>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : query.trim().length > 0 ? (
-                    <div className="px-4 py-8 text-center text-sm" style={{ color: "rgba(100,116,139,0.8)" }}>No services found</div>
-                  ) : (
-                    <div className="px-4 py-3">
-                      <p className="text-xs mb-2" style={{ color: "rgba(100,116,139,0.6)" }}>Popular</p>
-                      <div className="flex flex-wrap gap-1.5">
-                        {["Logo Design", "Landing Page", "SEO", "Social Media"].map((t) => (
-                          <button key={t} onClick={() => setQuery(t)}
-                            className="text-xs px-2.5 py-1 rounded-full transition-colors"
-                            style={{ background: "rgba(255,255,255,0.07)", color: "rgba(203,213,225,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.2)"; (e.currentTarget as HTMLElement).style.color = "#60a5fa"; }}
-                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.7)"; }}>
-                            {t}
-                          </button>
-                        ))}
-                      </div>
+                    </form>
+
+                    {/* Divider */}
+                    <div className="h-px mx-4" style={{ background: "rgba(255,255,255,0.07)" }} />
+
+                    {/* Results */}
+                    <div className="max-w-2xl mx-auto">
+                      {results.length > 0 ? (
+                        <ul className="max-h-72 overflow-y-auto">
+                          {results.map((s) => (
+                            <li key={s.id}>
+                              <button onClick={() => handleSelect(s.slug)}
+                                className="w-full flex items-start gap-3 px-4 py-3.5 text-left transition-colors"
+                                style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                                onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.04)"}
+                                onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "transparent"}>
+                                <span className="mt-0.5 shrink-0" style={{ color: "#60a5fa" }}>{getServiceIcon(s.icon)}</span>
+                                <div className="min-w-0">
+                                  <div className="text-sm font-semibold truncate" style={{ color: "#e2e8f0" }}>{s.name}</div>
+                                  <div className="text-xs mt-0.5" style={{ color: "#60a5fa" }}>{s.category} · {s.priceLabel}</div>
+                                </div>
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : query.trim().length > 0 ? (
+                        <div className="px-4 py-8 text-center text-sm" style={{ color: "rgba(100,116,139,0.7)" }}>
+                          No services found for &quot;{query}&quot;
+                        </div>
+                      ) : (
+                        <div className="px-4 py-3 pb-4">
+                          <p className="text-xs mb-3" style={{ color: "rgba(100,116,139,0.6)" }}>Popular searches</p>
+                          <div className="flex flex-wrap gap-2">
+                            {["Logo Design", "Landing Page", "SEO", "Social Media", "Video Editing", "Google Ads"].map((t) => (
+                              <button key={t} type="button" onClick={() => setQuery(t)}
+                                className="text-xs px-3 py-1.5 rounded-full transition-all"
+                                style={{ background: "rgba(255,255,255,0.06)", color: "rgba(203,213,225,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}
+                                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.18)"; (e.currentTarget as HTMLElement).style.color = "#60a5fa"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(37,99,235,0.3)"; }}
+                                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.7)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.08)"; }}>
+                                {t}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
+                  </div>
+                </>,
+                document.body
               )}
             </div>
 
