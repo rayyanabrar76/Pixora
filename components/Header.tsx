@@ -391,7 +391,7 @@ export default function Header() {
                                   style={{ color: "rgba(100,116,139,0.4)" }}
                                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fca5a5"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.1)"; }}
                                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.4)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
-                                  <X size={12} />
+                                  <Trash2 size={12} />
                                 </button>
                               </div>
                             </li>
