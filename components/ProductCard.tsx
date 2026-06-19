@@ -80,13 +80,6 @@ export default function ProductCard({ service }: { service: Service }) {
             aria-label="Quick View"
           />
 
-          {/* Mobile: "Quick View" label at bottom of banner */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center z-30 pointer-events-none">
-            <span className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full text-white"
-              style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.15)" }}>
-              <Eye size={11} /> Quick View
-            </span>
-          </div>
         </div>
 
         {/* Info — entire section is a Link that navigates to product page */}
