@@ -49,19 +49,17 @@ export default function Image({ params }: { params: { slug: string } }) {
           background: "radial-gradient(circle,rgba(255,255,255,0.12),transparent)",
         }} />
 
-        {/* Pixora mark top-left */}
+        {/* Pixora mark top-left — real logo SVG */}
         <div style={{
           position: "absolute", top: 40, left: 40,
           display: "flex", alignItems: "center", gap: 14,
         }}>
-          <div style={{
-            width: 52, height: 52,
-            background: "rgba(255,255,255,0.2)",
-            borderRadius: 12,
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <span style={{ color: "white", fontSize: 32, fontWeight: 900, lineHeight: 1 }}>P</span>
-          </div>
+          <svg width="56" height="56" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="9" fill="#0f172a" />
+            <path d="M8,8 L8,32 L13,32 L13,22 L26,22 L28,20 L28,10 L26,8 Z" fill="white" />
+            <path d="M13,12 L24,12 L25,13 L25,19 L24,20 L13,20 Z" fill="#0f172a" />
+            <circle cx="33" cy="30" r="3.5" fill="#3b82f6" />
+          </svg>
           <span style={{ color: "white", fontSize: 32, fontWeight: 900, opacity: 0.9 }}>
             Pix<span style={{ color: "#93c5fd" }}>ora</span>
           </span>
