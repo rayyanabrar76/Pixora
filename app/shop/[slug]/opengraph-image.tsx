@@ -60,9 +60,10 @@ export default function Image({ params }: { params: { slug: string } }) {
             <path d="M13,12 L24,12 L25,13 L25,19 L24,20 L13,20 Z" fill="#0f172a" />
             <circle cx="33" cy="30" r="3.5" fill="#3b82f6" />
           </svg>
-          <span style={{ color: "white", fontSize: 32, fontWeight: 900, opacity: 0.9 }}>
-            Pix<span style={{ color: "#93c5fd" }}>ora</span>
-          </span>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ color: "white", fontSize: 32, fontWeight: 900 }}>Pix</span>
+            <span style={{ color: "#93c5fd", fontSize: 32, fontWeight: 900 }}>ora</span>
+          </div>
         </div>
 
         {/* Left: service name */}

@@ -29,9 +29,10 @@ export default function Image() {
             <path d="M13,12 L24,12 L25,13 L25,19 L24,20 L13,20 Z" fill="#0f172a" />
             <circle cx="33" cy="30" r="3.5" fill="#3b82f6" />
           </svg>
-          <span style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, color: "white" }}>
-            Pix<span style={{ color: "#60a5fa" }}>ora</span>
-          </span>
+          <div style={{ display: "flex", alignItems: "baseline" }}>
+            <span style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, color: "white" }}>Pix</span>
+            <span style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, color: "#60a5fa" }}>ora</span>
+          </div>
         </div>
 
         {/* Tagline */}
