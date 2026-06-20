@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { Service } from "@/lib/services";
 
 type CartItem = Service & { qty: number };
@@ -15,10 +15,26 @@ type CartContextType = {
   totalPrice: number;
 };
 
+const STORAGE_KEY = "pixora_cart";
+
+function load(): CartItem[] {
+  if (typeof window === "undefined") return [];
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
 const CartContext = createContext<CartContextType | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(load);
+
+  /* Persist to localStorage whenever items change */
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+  }, [items]);
 
   const addToCart = (service: Service) => {
     setItems((prev) => {
