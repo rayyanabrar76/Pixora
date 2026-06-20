@@ -593,11 +593,16 @@ function UserMenu() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const dropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (
+        dropRef.current && !dropRef.current.contains(e.target as Node) &&
+        btnRef.current && !btnRef.current.contains(e.target as Node)
+      ) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -609,12 +614,20 @@ function UserMenu() {
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
   const email = user.emailAddresses[0]?.emailAddress ?? "";
 
+  const handleToggle = () => {
+    if (!open && btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 8, right: window.innerWidth - r.right });
+    }
+    setOpen(v => !v);
+  };
+
   return (
-    <div ref={ref} className="relative">
+    <div>
       {/* Avatar button */}
-      <button onClick={() => setOpen(v => !v)}
+      <button ref={btnRef} onClick={handleToggle}
         className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200"
-        style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)", outline: "2px solid transparent", outlineOffset: "2px" }}
+        style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)" }}
         onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(96,165,250,0.9)"}
         onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "rgba(96,165,250,0.4)"}>
         {user.imageUrl
@@ -623,60 +636,79 @@ function UserMenu() {
         }
       </button>
 
-      {/* Dropdown */}
-      {open && (
-        <div className="absolute right-0 top-12 w-72 rounded-2xl overflow-hidden"
-          style={{ background: "#0d1525", border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 24px 60px rgba(0,0,0,0.6)", zIndex: 100 }}>
+      {/* Dropdown — portal so it's never clipped by parent stacking contexts */}
+      {open && typeof document !== "undefined" && createPortal(
+        <>
+          {/* Invisible backdrop to catch outside clicks */}
+          <div onClick={() => setOpen(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
 
-          {/* Top accent */}
-          <div className="h-px w-full" style={{ background: "linear-gradient(to right,transparent,rgba(37,99,235,0.6),transparent)" }} />
+          <div ref={dropRef}
+            style={{
+              position: "fixed",
+              top: pos.top,
+              right: pos.right,
+              width: 288,
+              zIndex: 9999,
+              background: "#0d1525",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 16,
+              overflow: "hidden",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
+              animation: "ddFadeIn 0.18s cubic-bezier(0.16,1,0.3,1)",
+            }}>
+            <style>{`@keyframes ddFadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
 
-          {/* Profile row */}
-          <div className="flex items-center gap-3 px-4 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0 ring-2 ring-blue-500/30"
-              style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)" }}>
-              {user.imageUrl
-                ? <img src={user.imageUrl} alt={name} className="w-full h-full object-cover" />
-                : <span className="w-full h-full flex items-center justify-center text-white font-extrabold text-sm">{initials}</span>
-              }
+            {/* Top accent */}
+            <div style={{ height: 1, background: "linear-gradient(to right,transparent,rgba(37,99,235,0.6),transparent)" }} />
+
+            {/* Profile row */}
+            <div className="flex items-center gap-3 px-4 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+              <div className="w-11 h-11 rounded-xl overflow-hidden shrink-0"
+                style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.3)" }}>
+                {user.imageUrl
+                  ? <img src={user.imageUrl} alt={name} className="w-full h-full object-cover" />
+                  : <span className="w-full h-full flex items-center justify-center text-white font-extrabold text-sm">{initials}</span>
+                }
+              </div>
+              <div className="min-w-0">
+                <p className="font-bold text-sm truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+                <p className="text-xs truncate mt-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>{email}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="font-bold text-sm truncate" style={{ color: "#e2e8f0" }}>{name}</p>
-              <p className="text-xs truncate mt-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>{email}</p>
+
+            {/* Menu items */}
+            <div className="py-2">
+              <a href="/orders" onClick={() => setOpen(false)}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                style={{ color: "rgba(203,213,225,0.8)", textDecoration: "none" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#93c5fd"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#60a5fa", flexShrink: 0 }}>
+                  <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+                </svg>
+                My Orders
+              </a>
+              <button onClick={() => { signOut(); setOpen(false); }}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                style={{ color: "rgba(203,213,225,0.8)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f87171", flexShrink: 0 }}>
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                Sign Out
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="px-4 py-2.5 flex items-center gap-1.5" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+              <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+              <span className="text-[10px]" style={{ color: "rgba(100,116,139,0.6)" }}>Secured by Clerk</span>
             </div>
           </div>
-
-          {/* Menu items */}
-          <div className="py-2">
-            <a href="/orders"
-              onClick={() => setOpen(false)}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-              style={{ color: "rgba(203,213,225,0.8)", display: "flex", textDecoration: "none" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#93c5fd"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#60a5fa" }}>
-                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
-              </svg>
-              My Orders
-            </a>
-            <button onClick={() => { signOut(); setOpen(false); }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-              style={{ color: "rgba(203,213,225,0.8)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f87171" }}>
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-              </svg>
-              Sign Out
-            </button>
-          </div>
-
-          {/* Footer */}
-          <div className="px-4 py-2.5 flex items-center gap-1.5" style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-            <span className="text-[10px]" style={{ color: "rgba(100,116,139,0.6)" }}>Secured by Clerk</span>
-          </div>
-        </div>
+        </>,
+        document.body
       )}
     </div>
   );
