@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Users, Zap, Shield, Star, Target, Globe } from "lucide-react";
+import { PMark } from "@/components/Logo";
 
 const STATS = [
   { val: "200+", label: "Happy Clients",  sub: "Across Pakistan"      },
@@ -77,9 +78,9 @@ export default function AboutPage() {
             style={{ background: "linear-gradient(135deg,#0d1a3a,#0f1535)", border: "1px solid rgba(37,99,235,0.2)" }}>
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-4"
-                  style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 0 60px rgba(37,99,235,0.4)" }}>
-                  <span className="text-4xl font-extrabold text-white">P</span>
+                <div className="mb-4 flex items-center justify-center"
+                  style={{ filter: "drop-shadow(0 0 40px rgba(37,99,235,0.5))" }}>
+                  <PMark size={96} />
                 </div>
                 <p className="font-extrabold text-xl" style={{ color: "#e2e8f0" }}>Pixora</p>
                 <p className="text-sm mt-1" style={{ color: "rgba(148,163,184,0.6)" }}>Digital Agency · Pakistan</p>
