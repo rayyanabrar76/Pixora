@@ -448,7 +448,7 @@ export default function Header() {
                               onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)"}>
                               View Cart
                             </Link>
-                            <Link href="/contact" onClick={() => setCartOpen(false)}
+                            <Link href="/checkout" onClick={() => setCartOpen(false)}
                               className="flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-sm text-white transition-all"
                               style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 18px rgba(37,99,235,0.45)" }}>
                               Checkout <ArrowRight size={14} />
