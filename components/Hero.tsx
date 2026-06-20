@@ -233,7 +233,7 @@ export default function Hero() {
   const { Bg, tag, title, highlight, sub } = SLIDES[current];
 
   return (
-    <section className="relative h-200 lg:h-155 overflow-hidden">
+    <section className="relative h-175 lg:h-155 overflow-hidden">
 
       {/* Backgrounds */}
       {SLIDES.map(({ Bg: B }, i) => (
@@ -267,11 +267,11 @@ export default function Hero() {
             </Link>
           </div>
 
-          <div className="flex gap-8 flex-wrap">
+          <div className="grid grid-cols-4 gap-4">
             {STATS.map((s) => (
               <div key={s.label}>
-                <div className="text-xl font-extrabold text-white">{s.val}</div>
-                <div className="text-xs text-white/55 mt-0.5">{s.label}</div>
+                <div className="text-lg font-extrabold text-white">{s.val}</div>
+                <div className="text-[10px] text-white/55 mt-0.5 leading-tight">{s.label}</div>
               </div>
             ))}
           </div>
