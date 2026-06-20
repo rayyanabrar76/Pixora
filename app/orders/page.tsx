@@ -19,6 +19,10 @@ export default function OrdersPage() {
     }
   }, [isLoaded, user]);
 
+  const EJ_SVC = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  || "service_1mmyrpk";
+  const EJ_TPL = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID  || "template_0uow21s";
+  const EJ_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY   || "BUS00ZVP7fVGfsSdb";
+
   const handleCancel = async (order: StoredOrder) => {
     if (!user) return;
     setCancelling(order.id);
@@ -29,8 +33,8 @@ export default function OrdersPage() {
 
     try {
       await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        EJ_SVC,
+        EJ_TPL,
         {
           name: `[CANCELLED] ${order.firstName} ${order.lastName}`,
           email: order.email,
@@ -39,7 +43,7 @@ export default function OrdersPage() {
           total: order.total.toLocaleString(),
           notes: order.notes || "No notes",
         },
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        EJ_KEY
       );
 
       updateOrderStatus(user.id, order.id, "cancelled");
