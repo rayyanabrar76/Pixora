@@ -593,7 +593,7 @@ function UserMenu() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, right: 0 });
+  const [pos, setPos] = useState({ top: 0, left: 0 });
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -617,7 +617,12 @@ function UserMenu() {
   const handleToggle = () => {
     if (!open && btnRef.current) {
       const r = btnRef.current.getBoundingClientRect();
-      setPos({ top: r.bottom + 8, right: window.innerWidth - r.right });
+      const dropW = 288;
+      const margin = 8;
+      // align right edge of dropdown with right edge of button, then clamp
+      const rawLeft = r.right - dropW;
+      const left = Math.max(margin, Math.min(rawLeft, window.innerWidth - dropW - margin));
+      setPos({ top: r.bottom + 8, left });
     }
     setOpen(v => !v);
   };
@@ -647,7 +652,7 @@ function UserMenu() {
             style={{
               position: "fixed",
               top: pos.top,
-              right: pos.right,
+              left: pos.left,
               width: 288,
               zIndex: 9999,
               background: "#0d1525",
