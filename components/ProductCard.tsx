@@ -82,39 +82,39 @@ export default function ProductCard({ service }: { service: Service }) {
 
         </div>
 
-        {/* Info — entire section is a Link that navigates to product page */}
-        <Link href={`/shop/${service.slug}`} className="px-6 pb-6 pt-3 flex flex-col flex-1">
-          {/* Category */}
-          <span className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#60a5fa" }}>
-            {service.category}
-          </span>
+        {/* Info — text content links to product page; bottom row is outside Link so button works */}
+        <div className="px-6 pb-6 pt-3 flex flex-col flex-1">
+          <Link href={`/shop/${service.slug}`} className="flex flex-col flex-1">
+            {/* Category */}
+            <span className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: "#60a5fa" }}>
+              {service.category}
+            </span>
 
-          <h3 className="font-extrabold text-white text-lg leading-snug mb-2">
-            {service.name}
-          </h3>
+            <h3 className="font-extrabold text-white text-lg leading-snug mb-2">
+              {service.name}
+            </h3>
 
-          <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "rgba(148,163,184,0.75)" }}>
-            {service.description}
-          </p>
+            <p className="text-sm leading-relaxed mb-5 flex-1" style={{ color: "rgba(148,163,184,0.75)" }}>
+              {service.description}
+            </p>
+          </Link>
 
           {/* Divider */}
           <div className="h-px mb-5" style={{ background: "rgba(255,255,255,0.06)" }} />
 
-          {/* Bottom row */}
+          {/* Bottom row — lives outside <Link> so the button doesn't trigger navigation */}
           <div className="flex items-center justify-between">
-            <div>
+            <Link href={`/shop/${service.slug}`}>
               <p className="text-[10px] uppercase tracking-widest mb-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>Starting at</p>
               <span className="text-xl font-extrabold"
                 style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
                 {service.priceLabel}
               </span>
-            </div>
+            </Link>
 
             <button
               onClick={handleAdd}
-              className={`flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all hover:scale-105 ${
-                added ? "text-white" : "text-white"
-              }`}
+              className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl transition-all hover:scale-105 text-white"
               style={
                 added
                   ? { background: "#22c55e", boxShadow: "0 4px 16px rgba(34,197,94,0.4)" }
@@ -124,7 +124,7 @@ export default function ProductCard({ service }: { service: Service }) {
               {added ? "Added!" : "Add to Cart"}
             </button>
           </div>
-        </Link>
+        </div>
       </div>
     </div>
 

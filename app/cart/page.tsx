@@ -254,7 +254,7 @@ export default function CartPage() {
                   style={{ background: "rgba(37,99,235,0.07)", border: "1px solid rgba(37,99,235,0.18)" }}>
                   <p className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: "#60a5fa" }}>What happens next</p>
                   {[
-                    "Submit your order via the contact form",
+                    "Fill in your details and place your order",
                     "We review & confirm within 2 hours",
                     "Work begins — delivered on schedule",
                   ].map((step, i) => (
@@ -269,7 +269,7 @@ export default function CartPage() {
                 </div>
 
                 {/* CTA */}
-                <Link href="/contact"
+                <Link href="/checkout"
                   className="w-full flex items-center justify-center gap-2 font-bold py-4 rounded-xl text-white text-sm transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                   style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 24px rgba(37,99,235,0.5)" }}>
                   Proceed to Checkout

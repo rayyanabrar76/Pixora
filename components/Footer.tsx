@@ -117,7 +117,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-xs text-gray-600 mb-1 uppercase tracking-widest">Email</p>
-                <a href="mailto:yourmail@gmail.com" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">yourmail@gmail.com</a>
+                <a href="mailto:fahadwaseem461@gmail.com" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">fahadwaseem461@gmail.com</a>
               </div>
             </li>
             <li className="flex items-start gap-4">

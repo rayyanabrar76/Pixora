@@ -648,6 +648,17 @@ function UserMenu() {
 
           {/* Menu items */}
           <div className="py-2">
+            <a href="/orders"
+              onClick={() => setOpen(false)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+              style={{ color: "rgba(203,213,225,0.8)", display: "flex", textDecoration: "none" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#93c5fd"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#60a5fa" }}>
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/>
+              </svg>
+              My Orders
+            </a>
             <button onClick={() => { signOut(); setOpen(false); }}
               className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
               style={{ color: "rgba(203,213,225,0.8)" }}
