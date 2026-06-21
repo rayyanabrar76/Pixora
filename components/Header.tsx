@@ -613,6 +613,7 @@ function UserMenu() {
   const initials = ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase() || user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "U";
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
   const email = user.emailAddresses[0]?.emailAddress ?? "";
+  const isAdmin = email === "fahadwaseem461@gmail.com";
 
   const handleToggle = () => {
     if (!open && btnRef.current) {
@@ -677,13 +678,33 @@ function UserMenu() {
                 }
               </div>
               <div className="min-w-0">
-                <p className="font-bold text-sm truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-sm truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+                  {isAdmin && (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 uppercase tracking-wider"
+                      style={{ background: "rgba(234,179,8,0.15)", color: "#fbbf24", border: "1px solid rgba(234,179,8,0.3)" }}>
+                      Admin
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs truncate mt-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>{email}</p>
               </div>
             </div>
 
             {/* Menu items */}
             <div className="py-2">
+              {isAdmin && (
+                <a href="/admin" onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+                  style={{ color: "#fbbf24", textDecoration: "none" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(234,179,8,0.08)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#fbbf24", flexShrink: 0 }}>
+                    <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                  </svg>
+                  Admin Panel
+                </a>
+              )}
               <a href="/orders" onClick={() => setOpen(false)}
                 className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                 style={{ color: "rgba(203,213,225,0.8)", textDecoration: "none" }}
