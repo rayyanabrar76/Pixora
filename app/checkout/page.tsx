@@ -6,6 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Loader2, PackageCheck, ShoppingBag } from "lucide-react";
 import emailjs from "@emailjs/browser";
+import { supabase } from "@/lib/supabase";
 
 export type StoredOrder = {
   id: string;
@@ -143,6 +144,18 @@ export default function CheckoutPage() {
         };
         saveOrder(user.id, order);
       }
+
+      /* Save order to Supabase for admin panel */
+      await supabase.from("orders").insert({
+        user_id: user?.id ?? null,
+        user_email: form.email,
+        user_name: `${form.firstName} ${form.lastName}`.trim(),
+        phone: form.phone,
+        items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
+        total: totalPrice,
+        notes: form.notes || null,
+        status: "new",
+      });
 
       setDone(true);
       clearCart();
