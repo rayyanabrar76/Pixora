@@ -9,7 +9,7 @@ import { supabase, type DbService } from "@/lib/supabase";
 import {
   ShieldCheck, Mail, Package, TrendingUp, Users, ExternalLink,
   ArrowRight, AlertTriangle, BarChart2, Settings, Layers,
-  Plus, Trash2, Pencil, X, Loader2, CheckCircle2,
+  Plus, Trash2, Pencil, X, Loader2, CheckCircle2, Eye,
 } from "lucide-react";
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
@@ -292,6 +292,13 @@ export default function AdminPage() {
                     <p className="text-xs" style={{ color: "rgba(100,116,139,0.6)" }}>{s.category} · Rs. {s.price.toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
+                    <Link href={`/shop/${s.slug}`} target="_blank"
+                      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
+                      style={{ background: "rgba(34,197,94,0.08)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}
+                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(34,197,94,0.18)"}
+                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(34,197,94,0.08)"}>
+                      <Eye size={13} />
+                    </Link>
                     <button onClick={() => handleEdit(s)}
                       className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
                       style={{ background: "rgba(96,165,250,0.08)", color: "#60a5fa", border: "1px solid rgba(96,165,250,0.2)" }}
