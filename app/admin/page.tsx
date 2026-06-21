@@ -10,7 +10,8 @@ import {
   ArrowRight, AlertTriangle, BarChart2, Settings, Layers,
 } from "lucide-react";
 
-const ADMIN_EMAIL = "fahadwaseem461@gmail.com";
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "fahadwaseem461@gmail.com")
+  .split(",").map(e => e.trim());
 
 export default function AdminPage() {
   const { user, isLoaded } = useUser();
@@ -21,8 +22,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!isLoaded) return;
-    const email = user?.emailAddresses[0]?.emailAddress;
-    if (!user || email !== ADMIN_EMAIL) router.replace("/");
+    const email = user?.emailAddresses[0]?.emailAddress ?? "";
+    if (!user || !ADMIN_EMAILS.includes(email)) router.replace("/");
   }, [isLoaded, user, router]);
 
   if (!isLoaded || !mounted) {
@@ -34,7 +35,8 @@ export default function AdminPage() {
     );
   }
 
-  if (user?.emailAddresses[0]?.emailAddress !== ADMIN_EMAIL) return null;
+  const userEmail = user?.emailAddresses[0]?.emailAddress ?? "";
+  if (!ADMIN_EMAILS.includes(userEmail)) return null;
 
   const categories = [...new Set(SERVICES.map(s => s.category))];
 
@@ -72,7 +74,7 @@ export default function AdminPage() {
               Admin Panel
             </h1>
             <p className="text-sm mt-2" style={{ color: "rgba(100,116,139,0.7)" }}>
-              Signed in as <span style={{ color: "#fbbf24" }}>{ADMIN_EMAIL}</span>
+              Signed in as <span style={{ color: "#fbbf24" }}>{userEmail}</span>
             </p>
           </div>
           <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold"
