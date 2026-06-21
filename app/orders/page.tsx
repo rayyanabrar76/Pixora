@@ -23,10 +23,21 @@ type DisplayOrder = {
   isLegacy?: boolean;
 };
 
+function getHiddenIds(userId: string): Set<string> {
+  try { return new Set(JSON.parse(localStorage.getItem(`pixora_hidden_${userId}`) ?? "[]")); }
+  catch { return new Set(); }
+}
+function addHiddenIds(userId: string, ids: string[]) {
+  const s = getHiddenIds(userId);
+  ids.forEach(id => s.add(id));
+  localStorage.setItem(`pixora_hidden_${userId}`, JSON.stringify([...s]));
+}
+
 export default function OrdersPage() {
   const { user, isLoaded } = useUser();
   const [sbOrders, setSbOrders] = useState<DbOrder[]>([]);
   const [localOrders, setLocalOrders] = useState<StoredOrder[]>([]);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const [fetching, setFetching] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [cancelledId, setCancelledId] = useState<string | null>(null);
@@ -44,10 +55,11 @@ export default function OrdersPage() {
         setFetching(false);
       });
     setLocalOrders(getOrders(user.id));
+    setHiddenIds(getHiddenIds(user.id));
   }, [isLoaded, user]);
 
   const orders = useMemo<DisplayOrder[]>(() => {
-    const fromSupabase: DisplayOrder[] = sbOrders.map(o => {
+    const fromSupabase: DisplayOrder[] = sbOrders.filter(o => !hiddenIds.has(o.id)).map(o => {
       const parts = (o.user_name || "").split(" ");
       return {
         id: o.id,
@@ -83,7 +95,7 @@ export default function OrdersPage() {
       }));
 
     return [...fromSupabase, ...legacy];
-  }, [sbOrders, localOrders]);
+  }, [sbOrders, localOrders, hiddenIds]);
 
   const handleCancel = async (order: DisplayOrder) => {
     if (!user) return;
@@ -122,27 +134,25 @@ export default function OrdersPage() {
     setCancelling(null);
   };
 
-  const handleClearHistory = async () => {
+  const handleClearHistory = () => {
     if (!user) return;
     setClearing(true);
 
-    // Collect Supabase IDs being deleted so we can also remove their localStorage mirrors
-    const deletedSbIds = new Set(
-      sbOrders.filter(o => o.status === "approved" || o.status === "cancelled").map(o => o.id)
-    );
+    // Hide approved/cancelled Supabase orders locally — admin still sees them
+    const toHide = sbOrders
+      .filter(o => o.status === "approved" || o.status === "cancelled")
+      .map(o => o.id);
+    addHiddenIds(user.id, toHide);
+    const newHidden = getHiddenIds(user.id);
+    setHiddenIds(newHidden);
 
-    await supabase.from("orders").delete()
-      .eq("user_id", user.id)
-      .in("status", ["approved", "cancelled"]);
-
-    setSbOrders(prev => prev.filter(o => o.status !== "approved" && o.status !== "cancelled"));
-
-    // Keep only pending localStorage entries that are NOT linked to a deleted Supabase row
+    // Remove cancelled entries from localStorage; keep pending ones
     const remaining = getOrders(user.id).filter(o =>
-      o.status === "pending" && (!o.supabase_id || !deletedSbIds.has(o.supabase_id))
+      o.status === "pending" && (!o.supabase_id || !newHidden.has(o.supabase_id))
     );
     localStorage.setItem(`pixora_orders_${user.id}`, JSON.stringify(remaining));
     setLocalOrders(remaining);
+
     setConfirmClear(false);
     setClearing(false);
   };
