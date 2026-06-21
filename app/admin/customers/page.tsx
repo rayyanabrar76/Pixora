@@ -76,8 +76,10 @@ export default function AdminCustomersPage() {
   const customers = useMemo<Customer[]>(() => {
     const map = new Map<string, Customer>();
 
-    // Registered Clerk users
-    for (const u of clerkUsers) {
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
+
+    // Registered Clerk users (exclude admins)
+    for (const u of clerkUsers.filter(u => !adminEmails.includes(u.email))) {
       const name = [u.firstName, u.lastName].filter(Boolean).join(" ") || u.email;
       map.set(u.id, {
         key: u.id,
@@ -96,8 +98,8 @@ export default function AdminCustomersPage() {
     for (const o of orders) {
       if (o.user_id && map.has(o.user_id)) {
         map.get(o.user_id)!.orders.push(o);
-      } else if (!o.user_id) {
-        // Guest — group by email
+      } else if (!o.user_id && !adminEmails.includes(o.user_email)) {
+        // Guest — group by email (skip admin emails)
         const key = `guest_${o.user_email}`;
         if (!map.has(key)) {
           map.set(key, {
