@@ -5,8 +5,8 @@ import { Mail, Phone, MapPin, Clock, ArrowRight, CheckCircle2, Send } from "luci
 
 const CONTACT_ITEMS = [
   { Icon: Mail,    label: "Email",    value: "fahadwaseem461@gmail.com",    sub: "We reply within 2 hours"    },
-  { Icon: Phone,   label: "Phone",    value: "03XX-XXXXXXX",          sub: "Mon–Sat, 9am – 9pm"         },
-  { Icon: MapPin,  label: "Location", value: "Your City, Pakistan",   sub: "Available remotely worldwide"},
+  { Icon: Phone,   label: "Phone",    value: "03444-029461",                                                             sub: "Mon–Sat, 9am – 9pm"         },
+  { Icon: MapPin,  label: "Location", value: "Arora Chorasta, Mian Khan Baseerpur, Tehsil Depalpur, District Okara", sub: "Available remotely worldwide"},
   { Icon: Clock,   label: "Hours",    value: "Mon–Sat, 9am – 9pm",   sub: "We're usually online early"  },
 ];
 

@@ -126,7 +126,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-xs text-gray-600 mb-1 uppercase tracking-widest">Phone</p>
-                <a href="tel:03000000000" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">03XX-XXXXXXX</a>
+                <a href="tel:03444029461" className="text-sm text-gray-400 hover:text-blue-400 transition-colors">03444-029461</a>
               </div>
             </li>
             <li className="flex items-start gap-4">
@@ -135,7 +135,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-xs text-gray-600 mb-1 uppercase tracking-widest">Location</p>
-                <p className="text-sm text-gray-400">Your City, Pakistan</p>
+                <p className="text-sm text-gray-400">Arora Chorasta, Mian Khan Baseerpur, Tehsil Depalpur, District Okara</p>
               </div>
             </li>
           </ul>
