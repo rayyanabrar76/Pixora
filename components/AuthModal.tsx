@@ -152,8 +152,8 @@ export default function AuthModal({ onClose }: Props) {
               <PMark size={38} />
               <div>
                 <p className="text-xs uppercase tracking-widest mb-0.5" style={{ color: "rgba(100,116,139,0.7)" }}>Welcome to</p>
-                <span className="text-xl font-extrabold tracking-tight">
-                  <span className="text-white">Pix</span><span className="text-blue-400">ora</span>
+                <span style={{ fontFamily: "var(--font-brand, sans-serif)", fontWeight: 900, color: "#0097B2", fontSize: "1rem", letterSpacing: "0.01em", lineHeight: 1 }}>
+                  FAHADAMINAENTERPRISES
                 </span>
               </div>
             </div>

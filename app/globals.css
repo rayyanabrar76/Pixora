@@ -85,3 +85,9 @@ html {
   from { transform: scaleX(0); }
   to   { transform: scaleX(1); }
 }
+
+/* Hide Clerk's "WELCOME TO Pixora" header — we show our own branding */
+.cl-logoBox,
+.cl-headerTitle,
+.cl-headerSubtitle,
+.cl-header { display: none !important; }
