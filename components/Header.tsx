@@ -28,10 +28,13 @@ const NAV = [
 export default function Header() {
   const { items, totalItems, totalPrice, removeFromCart } = useCart();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [menuOpen,   setMenuOpen]   = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [cartOpen,   setCartOpen]   = useState(false);
   const [authOpen,   setAuthOpen]   = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
   const [scrolled,   setScrolled]   = useState(false);
   const [query,      setQuery]      = useState("");
   const inputRef  = useRef<HTMLInputElement>(null);
@@ -339,7 +342,7 @@ export default function Header() {
                 onMouseEnter={e => { if (!cartOpen) { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}}
                 onMouseLeave={e => { if (!cartOpen) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(148,163,184,0.8)"; }}}>
                 <ShoppingCart size={17} />
-                {totalItems > 0 && (
+                {mounted && totalItems > 0 && (
                   <span className="absolute -top-1 -right-1 text-white text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center"
                     style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)" }}>
                     {totalItems}
@@ -380,7 +383,7 @@ export default function Header() {
                       <div className="flex items-center gap-2.5">
                         <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
                         <span className="font-extrabold text-sm" style={{ color: "#f1f5f9" }}>Your Cart</span>
-                        {totalItems > 0 && (
+                        {mounted && totalItems > 0 && (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full"
                             style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa", border: "1px solid rgba(37,99,235,0.3)" }}>
                             {totalItems} item{totalItems !== 1 ? "s" : ""}
@@ -552,7 +555,7 @@ export default function Header() {
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(37,99,235,0.1)"; (e.currentTarget as HTMLElement).style.color = "#fff"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.75)"; }}>
                 <ShoppingCart size={15} style={{ color: "#60a5fa" }} />
-                Cart {totalItems > 0 && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa" }}>{totalItems}</span>}
+                Cart {mounted && totalItems > 0 && <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(37,99,235,0.2)", color: "#60a5fa" }}>{totalItems}</span>}
               </Link>
             </nav>
 
