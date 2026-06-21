@@ -17,7 +17,7 @@ function dbToService(s: DbService): Service {
     price: s.price,
     priceLabel: s.price_label,
     description: s.description,
-    details: [],
+    details: s.details ?? [],
     badge: s.badge ?? undefined,
     icon: s.icon,
   };
@@ -30,13 +30,21 @@ function ShopContent() {
   const [activeCategory, setActiveCategory] = useState(initialCat);
   const [search, setSearch] = useState(initialSearch);
   const [dbServices, setDbServices] = useState<Service[]>([]);
+  const [allDbSlugs, setAllDbSlugs] = useState<string[]>([]);
 
   useEffect(() => {
-    supabase.from("services").select("*").order("created_at", { ascending: false })
+    // Fetch visible (non-deleted) services for display
+    supabase.from("services").select("*").is("deleted_at", null).order("created_at", { ascending: false })
       .then(({ data }) => { if (data) setDbServices(data.map(dbToService)); });
+    // Fetch ALL slugs (including deleted) so deleted static services stay hidden
+    supabase.from("services").select("slug")
+      .then(({ data }) => { if (data) setAllDbSlugs(data.map((d: { slug: string }) => d.slug)); });
   }, []);
 
-  const allServices = useMemo(() => [...SERVICES, ...dbServices], [dbServices]);
+  const allServices = useMemo(() => [
+    ...SERVICES.filter(s => !allDbSlugs.includes(s.slug)),
+    ...dbServices,
+  ], [dbServices, allDbSlugs]);
 
   const allCategories = useMemo(() => {
     const extra = dbServices.map(s => s.category).filter(c => !CATEGORIES.includes(c));

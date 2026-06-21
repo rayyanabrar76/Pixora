@@ -15,5 +15,7 @@ export type DbService = {
   badge?: string | null;
   slug: string;
   icon: string;
+  details: string[];
   created_at: string;
+  deleted_at: string | null;
 };

@@ -1,19 +1,64 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SERVICES } from "@/lib/services";
+import { SERVICES, type Service } from "@/lib/services";
+import { supabase, type DbService } from "@/lib/supabase";
 import { useCart } from "@/context/CartContext";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingCart, Check, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, Check, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
 import ServiceBanner from "@/components/ServiceBanner";
 import ProductCard from "@/components/ProductCard";
 
+function dbToService(s: DbService): Service {
+  return {
+    id: `db_${s.id}`,
+    slug: s.slug,
+    name: s.name,
+    category: s.category,
+    price: s.price,
+    priceLabel: s.price_label,
+    description: s.description,
+    details: s.details ?? [],
+    badge: s.badge ?? undefined,
+    icon: s.icon,
+  };
+}
+
 export default function ServiceDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const service = SERVICES.find((s) => s.slug === slug);
+  const [service, setService] = useState<Service | null>(null);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const [added, setAdded] = useState(false);
+
+  useEffect(() => {
+    supabase.from("services").select("*").eq("slug", slug).single()
+      .then(({ data }) => {
+        const db = data as DbService | null;
+        if (db && !db.deleted_at) {
+          // DB version exists and is not deleted — use it
+          setService(dbToService(db));
+        } else if (db && db.deleted_at) {
+          // DB version exists but was deleted — show "not found", don't fall back to static
+          setService(null);
+        } else {
+          // Not in DB at all — fall back to static
+          const s = SERVICES.find(s => s.slug === slug);
+          setService(s ?? null);
+        }
+        setLoading(false);
+      });
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div style={{ background: "#060d1f", minHeight: "100vh" }}
+        className="flex items-center justify-center">
+        <Loader2 size={28} className="animate-spin" style={{ color: "#60a5fa" }} />
+      </div>
+    );
+  }
 
   if (!service) {
     return (
@@ -100,17 +145,21 @@ export default function ServiceDetail() {
             <div className="h-px mb-6" style={{ background: "rgba(255,255,255,0.07)" }} />
 
             {/* What's included */}
-            <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(100,116,139,0.8)" }}>
-              What&apos;s included
-            </p>
-            <ul className="space-y-2.5 mb-8">
-              {service.details.map((d) => (
-                <li key={d} className="flex items-start gap-3 text-sm" style={{ color: "rgba(203,213,225,0.85)" }}>
-                  <CheckCircle2 size={16} className="shrink-0 mt-0.5" style={{ color: "#60a5fa" }} />
-                  {d}
-                </li>
-              ))}
-            </ul>
+            {service.details.length > 0 && (
+              <>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(100,116,139,0.8)" }}>
+                  What&apos;s included
+                </p>
+                <ul className="space-y-2.5 mb-8">
+                  {service.details.map((d) => (
+                    <li key={d} className="flex items-start gap-3 text-sm" style={{ color: "rgba(203,213,225,0.85)" }}>
+                      <CheckCircle2 size={16} className="shrink-0 mt-0.5" style={{ color: "#60a5fa" }} />
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
 
             {/* Price + CTA */}
             <div className="mt-auto pt-6 border-t flex items-center justify-between gap-4"
