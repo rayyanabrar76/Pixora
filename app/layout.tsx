@@ -4,6 +4,14 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { CartProvider } from "@/context/CartContext";
 import SiteChrome from "@/components/SiteChrome";
 import TopProgress from "@/components/TopProgress";
+import { Nunito } from "next/font/google";
+
+const nunito = Nunito({
+  subsets: ["latin"],
+  weight: ["400", "700", "800", "900"],
+  variable: "--font-brand",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Fahadamina Enterprises - Digital Services",
@@ -27,7 +35,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" className={nunito.variable}>
         <body className="min-h-screen flex flex-col">
           <CartProvider>
             <TopProgress />

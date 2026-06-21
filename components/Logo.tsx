@@ -31,10 +31,16 @@ export default function Logo({ size = 46, href = "/", showWordmark = true }: Pro
     <Link href={href} className="flex items-center gap-2.5 shrink-0">
       <PMark size={size} />
       {showWordmark && (
-        <span className="text-xl font-extrabold tracking-tight leading-tight">
-          <span className="text-white">Fahadamina</span>
-          <br />
-          <span style={{ color: "#0097B2", fontSize: "0.7em", letterSpacing: "0.05em" }}>ENTERPRISES</span>
+        <span
+          style={{
+            fontFamily: "var(--font-brand, sans-serif)",
+            fontWeight: 900,
+            color: "#0097B2",
+            fontSize: "1.15rem",
+            letterSpacing: "0.01em",
+            lineHeight: 1,
+          }}>
+          FAHADAMINA<wbr />ENTERPRISES
         </span>
       )}
     </Link>
