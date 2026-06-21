@@ -74,13 +74,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </div>
 
-        {/* Logged-in admin */}
-        <div className="px-3 py-2.5 mx-2 my-2 rounded-xl" style={{ background: "rgba(251,191,36,0.06)", border: "1px solid rgba(251,191,36,0.12)" }}>
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: "rgba(251,191,36,0.5)" }}>Signed in as</p>
-          <p className="text-xs font-semibold truncate" style={{ color: "#fde68a" }}>{user?.firstName || email.split("@")[0]}</p>
-          <p className="text-[10px] truncate" style={{ color: "rgba(251,191,36,0.4)" }}>{email}</p>
-        </div>
-
         {/* Nav */}
         <nav className="flex-1 p-2.5 flex flex-col gap-1">
           {NAV.map(({ label, href, icon: Icon }) => {
@@ -127,14 +120,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <span className="text-sm font-bold" style={{ color: "#fde68a" }}>
             {NAV.find(n => n.href === pathname)?.label ?? "Admin"}
           </span>
-        </div>
-
-        {/* Desktop top bar */}
-        <div className="hidden lg:flex items-center justify-end px-6 py-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", background: "#080f22" }}>
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={11} style={{ color: "#fbbf24" }} />
-            <span className="text-[11px] font-semibold" style={{ color: "rgba(251,191,36,0.6)" }}>{email}</span>
-          </div>
         </div>
 
         <main className="flex-1">
