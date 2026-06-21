@@ -125,13 +125,22 @@ export default function OrdersPage() {
   const handleClearHistory = async () => {
     if (!user) return;
     setClearing(true);
-    // Only delete approved and cancelled — keep pending orders
+
+    // Collect Supabase IDs being deleted so we can also remove their localStorage mirrors
+    const deletedSbIds = new Set(
+      sbOrders.filter(o => o.status === "approved" || o.status === "cancelled").map(o => o.id)
+    );
+
     await supabase.from("orders").delete()
       .eq("user_id", user.id)
       .in("status", ["approved", "cancelled"]);
+
     setSbOrders(prev => prev.filter(o => o.status !== "approved" && o.status !== "cancelled"));
-    // Filter localStorage the same way
-    const remaining = getOrders(user.id).filter(o => o.status === "pending");
+
+    // Keep only pending localStorage entries that are NOT linked to a deleted Supabase row
+    const remaining = getOrders(user.id).filter(o =>
+      o.status === "pending" && (!o.supabase_id || !deletedSbIds.has(o.supabase_id))
+    );
     localStorage.setItem(`pixora_orders_${user.id}`, JSON.stringify(remaining));
     setLocalOrders(remaining);
     setConfirmClear(false);
