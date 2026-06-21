@@ -2,13 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { supabase, type DbOrder } from "@/lib/supabase";
-import { ShoppingBag, Loader2, CheckCircle2, Clock, ChevronDown, ChevronUp, Mail, Phone, StickyNote } from "lucide-react";
+import { ShoppingBag, Loader2, CheckCircle2, Clock, ChevronDown, ChevronUp, Mail, Phone, StickyNote, XCircle } from "lucide-react";
+
+const STATUS_STYLE = {
+  new:       { bg: "rgba(37,99,235,0.12)",   color: "#60a5fa",  border: "1px solid rgba(37,99,235,0.25)",   label: "New" },
+  pending:   { bg: "rgba(251,191,36,0.12)",  color: "#fbbf24",  border: "1px solid rgba(251,191,36,0.25)",  label: "Pending" },
+  approved:  { bg: "rgba(34,197,94,0.12)",   color: "#4ade80",  border: "1px solid rgba(34,197,94,0.25)",   label: "Approved" },
+  cancelled: { bg: "rgba(239,68,68,0.12)",   color: "#fca5a5",  border: "1px solid rgba(239,68,68,0.25)",   label: "Cancelled" },
+};
 
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<DbOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | "new" | "seen">("all");
+  const [filter, setFilter] = useState<"all" | "new" | "pending" | "approved" | "cancelled">("all");
+  const [approvingId, setApprovingId] = useState<string | null>(null);
 
   const loadOrders = async () => {
     const { data } = await supabase
@@ -21,13 +29,22 @@ export default function AdminOrdersPage() {
 
   useEffect(() => { loadOrders(); }, []);
 
-  const markSeen = async (id: string) => {
-    await supabase.from("orders").update({ status: "seen" }).eq("id", id);
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: "seen" } : o));
+  const markPending = async (id: string) => {
+    await supabase.from("orders").update({ status: "pending" }).eq("id", id);
+    setOrders(prev => prev.map(o => o.id === id && o.status === "new" ? { ...o, status: "pending" } : o));
   };
 
-  const filtered = orders.filter(o => filter === "all" || o.status === filter);
+  const handleApprove = async (id: string) => {
+    setApprovingId(id);
+    await supabase.from("orders").update({ status: "approved" }).eq("id", id);
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: "approved" } : o));
+    setApprovingId(null);
+  };
+
+  const filtered = filter === "all" ? orders : orders.filter(o => o.status === filter);
   const newCount = orders.filter(o => o.status === "new").length;
+
+  const FILTERS = ["all", "new", "pending", "approved", "cancelled"] as const;
 
   return (
     <div className="p-6" style={{ minHeight: "100vh", background: "#060d1f" }}>
@@ -39,11 +56,10 @@ export default function AdminOrdersPage() {
             {orders.length} total · {newCount} new
           </p>
         </div>
-        {/* Filter tabs */}
-        <div className="flex rounded-xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-          {(["all", "new", "seen"] as const).map(tab => (
+        <div className="flex rounded-xl overflow-hidden flex-wrap" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+          {FILTERS.map(tab => (
             <button key={tab} onClick={() => setFilter(tab)}
-              className="px-4 py-1.5 text-xs font-bold capitalize transition-all"
+              className="px-3 py-1.5 text-xs font-bold capitalize transition-all"
               style={filter === tab
                 ? { background: "rgba(37,99,235,0.18)", color: "#60a5fa" }
                 : { background: "transparent", color: "rgba(100,116,139,0.6)" }}>
@@ -61,17 +77,21 @@ export default function AdminOrdersPage() {
         <div className="rounded-2xl p-16 text-center"
           style={{ background: "#0b1120", border: "1px solid rgba(255,255,255,0.06)" }}>
           <ShoppingBag size={28} className="mx-auto mb-3" style={{ color: "rgba(100,116,139,0.25)" }} />
-          <p className="font-bold mb-1" style={{ color: "#e2e8f0" }}>No orders yet</p>
-          <p className="text-sm" style={{ color: "rgba(100,116,139,0.5)" }}>Orders will appear here once customers checkout.</p>
+          <p className="font-bold mb-1" style={{ color: "#e2e8f0" }}>No orders</p>
+          <p className="text-sm" style={{ color: "rgba(100,116,139,0.5)" }}>
+            {filter === "all" ? "Orders will appear here once customers checkout." : `No ${filter} orders.`}
+          </p>
         </div>
       ) : (
         <div className="rounded-2xl overflow-hidden"
           style={{ background: "#0b1120", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="h-0.75" style={{ background: "linear-gradient(to right,#2563eb,#7c3aed)" }} />
           {filtered.map((order, i) => {
-            const isNew = order.status === "new";
+            const st = STATUS_STYLE[order.status] ?? STATUS_STYLE.pending;
             const isOpen = expanded === order.id;
             const date = new Date(order.created_at);
+            const canApprove = order.status === "new" || order.status === "pending";
+            const isCancelled = order.status === "cancelled";
 
             return (
               <div key={order.id}
@@ -83,22 +103,25 @@ export default function AdminOrdersPage() {
                   style={{ background: isOpen ? "rgba(37,99,235,0.04)" : "transparent" }}
                   onClick={() => {
                     setExpanded(isOpen ? null : order.id);
-                    if (isNew) markSeen(order.id);
+                    if (order.status === "new") markPending(order.id);
                   }}>
 
-                  {/* New dot */}
+                  {/* Status dot */}
                   <div className="shrink-0 w-2 h-2 rounded-full"
-                    style={{ background: isNew ? "#60a5fa" : "rgba(255,255,255,0.08)" }} />
+                    style={{ background: order.status === "new" ? "#60a5fa" : "rgba(255,255,255,0.08)" }} />
 
-                  {/* User info */}
+                  {/* User */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-sm font-bold" style={{ color: "#e2e8f0" }}>{order.user_name || "Guest"}</span>
-                      {isNew && (
-                        <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
-                          style={{ background: "rgba(37,99,235,0.15)", color: "#60a5fa", border: "1px solid rgba(37,99,235,0.25)" }}>
-                          New
-                        </span>
+                      <span className="text-sm font-bold" style={{ color: isCancelled ? "rgba(226,232,240,0.5)" : "#e2e8f0" }}>
+                        {order.user_name || "Guest"}
+                      </span>
+                      <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md uppercase tracking-wider"
+                        style={{ background: st.bg, color: st.color, border: st.border }}>
+                        {st.label}
+                      </span>
+                      {isCancelled && (
+                        <span className="text-[9px]" style={{ color: "rgba(248,113,113,0.6)" }}>— cancelled by customer</span>
                       )}
                     </div>
                     <p className="text-xs mt-0.5" style={{ color: "rgba(100,116,139,0.6)" }}>{order.user_email}</p>
@@ -109,7 +132,7 @@ export default function AdminOrdersPage() {
                     {order.items.map(it => it.name).join(", ")}
                   </div>
 
-                  {/* Total */}
+                  {/* Total + date */}
                   <div className="shrink-0 text-right">
                     <span className="text-sm font-extrabold"
                       style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
@@ -182,10 +205,36 @@ export default function AdminOrdersPage() {
                       </div>
                     </div>
 
-                    {/* Timestamp */}
-                    <div className="sm:col-span-2 flex items-center gap-2 text-xs" style={{ color: "rgba(100,116,139,0.4)" }}>
-                      <Clock size={10} />
-                      Placed on {date.toLocaleString("en-PK", { dateStyle: "long", timeStyle: "short" })}
+                    {/* Actions row */}
+                    <div className="sm:col-span-2 flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-2 text-xs" style={{ color: "rgba(100,116,139,0.4)" }}>
+                        <Clock size={10} />
+                        {date.toLocaleString("en-PK", { dateStyle: "long", timeStyle: "short" })}
+                      </div>
+
+                      {canApprove && (
+                        <button onClick={() => handleApprove(order.id)} disabled={approvingId === order.id}
+                          className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-60"
+                          style={{ background: "rgba(34,197,94,0.12)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.25)" }}
+                          onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(34,197,94,0.22)"}
+                          onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(34,197,94,0.12)"}>
+                          {approvingId === order.id
+                            ? <><Loader2 size={11} className="animate-spin" /> Approving…</>
+                            : <><CheckCircle2 size={11} /> Approve Order</>}
+                        </button>
+                      )}
+
+                      {order.status === "approved" && (
+                        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "#4ade80" }}>
+                          <CheckCircle2 size={13} /> Order approved
+                        </div>
+                      )}
+
+                      {isCancelled && (
+                        <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "#fca5a5" }}>
+                          <XCircle size={13} /> Cancelled by customer
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

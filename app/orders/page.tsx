@@ -1,66 +1,126 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { ArrowRight, PackageCheck, Clock, XCircle, ShoppingBag, Loader2 } from "lucide-react";
+import { ArrowRight, PackageCheck, Clock, XCircle, ShoppingBag, Loader2, CheckCircle2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import { type StoredOrder, getOrders, updateOrderStatus } from "@/app/checkout/page";
+import { supabase, type DbOrder } from "@/lib/supabase";
+
+type DisplayOrder = {
+  id: string;
+  supabaseId?: string;
+  items: { id: string; name: string; qty: number; price: number; category: string }[];
+  total: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  notes: string;
+  status: "pending" | "approved" | "cancelled";
+  createdAt: string;
+  isLegacy?: boolean;
+};
 
 export default function OrdersPage() {
   const { user, isLoaded } = useUser();
-  const [orders, setOrders] = useState<StoredOrder[]>([]);
+  const [sbOrders, setSbOrders] = useState<DbOrder[]>([]);
+  const [localOrders, setLocalOrders] = useState<StoredOrder[]>([]);
+  const [fetching, setFetching] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [cancelledId, setCancelledId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isLoaded && user) {
-      setOrders(getOrders(user.id));
-    }
+    if (!isLoaded) return;
+    if (!user) { setFetching(false); return; }
+    supabase.from("orders").select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        if (data) setSbOrders(data as DbOrder[]);
+        setFetching(false);
+      });
+    setLocalOrders(getOrders(user.id));
   }, [isLoaded, user]);
 
-  const EJ_SVC = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
-  const EJ_TPL = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
-  const EJ_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
+  const orders = useMemo<DisplayOrder[]>(() => {
+    const fromSupabase: DisplayOrder[] = sbOrders.map(o => {
+      const parts = (o.user_name || "").split(" ");
+      return {
+        id: o.id,
+        supabaseId: o.id,
+        items: o.items,
+        total: o.total,
+        firstName: parts[0] || "",
+        lastName: parts.slice(1).join(" "),
+        email: o.user_email,
+        phone: o.phone || "",
+        notes: o.notes || "",
+        status: o.status === "approved" ? "approved" : o.status === "cancelled" ? "cancelled" : "pending",
+        createdAt: o.created_at,
+      };
+    });
 
-  const handleCancel = async (order: StoredOrder) => {
+    const sbIds = new Set(sbOrders.map(o => o.id));
+    const legacy: DisplayOrder[] = localOrders
+      .filter(o => !o.supabase_id || !sbIds.has(o.supabase_id))
+      .map(o => ({
+        id: o.id,
+        supabaseId: o.supabase_id,
+        items: o.items,
+        total: o.total,
+        firstName: o.firstName,
+        lastName: o.lastName,
+        email: o.email,
+        phone: o.phone,
+        notes: o.notes,
+        status: o.status as "pending" | "cancelled",
+        createdAt: o.createdAt,
+        isLegacy: true,
+      }));
+
+    return [...fromSupabase, ...legacy];
+  }, [sbOrders, localOrders]);
+
+  const handleCancel = async (order: DisplayOrder) => {
     if (!user) return;
     setCancelling(order.id);
 
+    const EJ_SVC = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+    const EJ_TPL = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
+    const EJ_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
+
     const orderItems = order.items
-      .map((item) => `${item.name} x${item.qty} - Rs.${(item.price * item.qty).toLocaleString()}`)
+      .map(it => `${it.name} x${it.qty} - Rs.${(it.price * it.qty).toLocaleString()}`)
       .join("\n");
 
     try {
-      await emailjs.send(
-        EJ_SVC,
-        EJ_TPL,
-        {
-          name: `[CANCELLED] ${order.firstName} ${order.lastName}`,
-          email: order.email,
-          phone: order.phone,
-          order_items: `*** CUSTOMER CANCELLED THIS ORDER ***\n\n${orderItems}`,
-          total: order.total.toLocaleString(),
-          notes: order.notes || "No notes",
-        },
-        EJ_KEY
-      );
+      await emailjs.send(EJ_SVC, EJ_TPL, {
+        name: `[CANCELLED] ${order.firstName} ${order.lastName}`,
+        email: order.email,
+        phone: order.phone,
+        order_items: `*** CUSTOMER CANCELLED THIS ORDER ***\n\n${orderItems}`,
+        total: order.total.toLocaleString(),
+        notes: order.notes || "No notes",
+      }, EJ_KEY);
+    } catch { /* silently continue */ }
 
-      updateOrderStatus(user.id, order.id, "cancelled");
-      setOrders(getOrders(user.id));
-      setCancelledId(order.id);
-      setTimeout(() => setCancelledId(null), 3000);
-    } catch {
-      /* silently fail — order still gets marked cancelled locally */
-      updateOrderStatus(user.id, order.id, "cancelled");
-      setOrders(getOrders(user.id));
-    } finally {
-      setCancelling(null);
+    if (order.supabaseId) {
+      await supabase.from("orders").update({ status: "cancelled" }).eq("id", order.supabaseId);
+      setSbOrders(prev => prev.map(o => o.id === order.supabaseId ? { ...o, status: "cancelled" } : o));
     }
+    if (order.isLegacy) {
+      updateOrderStatus(user.id, order.id, "cancelled");
+      setLocalOrders(getOrders(user.id));
+    }
+
+    setCancelledId(order.id);
+    setTimeout(() => setCancelledId(null), 3000);
+    setCancelling(null);
   };
 
-  /* ── Loading ── */
-  if (!isLoaded) {
+  if (!isLoaded || fetching) {
     return (
       <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}
         className="flex items-center justify-center">
@@ -69,7 +129,6 @@ export default function OrdersPage() {
     );
   }
 
-  /* ── Not signed in ── */
   if (!user) {
     return (
       <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}
@@ -90,14 +149,21 @@ export default function OrdersPage() {
 
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "there";
 
+  const statusStyle = (status: DisplayOrder["status"]) => {
+    if (status === "approved") return { background: "rgba(34,197,94,0.12)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.25)" };
+    if (status === "cancelled") return { background: "rgba(239,68,68,0.12)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.25)" };
+    return { background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.25)" };
+  };
+
+  const statusLabel = (status: DisplayOrder["status"]) =>
+    status === "approved" ? "Approved" : status === "cancelled" ? "Cancelled" : "Pending";
+
   return (
     <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}>
       <div className="fixed top-0 left-1/4 w-125 h-125 rounded-full blur-3xl opacity-[0.04] pointer-events-none"
         style={{ background: "radial-gradient(circle,#2563eb,transparent)" }} />
 
       <div className="max-w-3xl mx-auto px-4 py-14 relative">
-
-        {/* Header */}
         <div className="mb-10">
           <span className="inline-flex items-center gap-2 text-[11px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest mb-4"
             style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)", color: "#60a5fa" }}>
@@ -113,15 +179,12 @@ export default function OrdersPage() {
           </p>
         </div>
 
-        {/* Empty state */}
         {orders.length === 0 && (
           <div className="rounded-2xl p-12 text-center"
             style={{ background: "#0b1120", border: "1px solid rgba(255,255,255,0.07)" }}>
             <ShoppingBag size={36} className="mx-auto mb-4" style={{ color: "rgba(96,165,250,0.3)" }} />
             <p className="font-bold text-base mb-1" style={{ color: "#e2e8f0" }}>No orders yet</p>
-            <p className="text-sm mb-7" style={{ color: "rgba(100,116,139,0.6)" }}>
-              Browse our services and place your first order.
-            </p>
+            <p className="text-sm mb-7" style={{ color: "rgba(100,116,139,0.6)" }}>Browse our services and place your first order.</p>
             <Link href="/shop"
               className="inline-flex items-center gap-2 font-bold px-6 py-3 rounded-xl text-white text-sm transition-all hover:scale-[1.02]"
               style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 20px rgba(37,99,235,0.4)" }}>
@@ -130,15 +193,13 @@ export default function OrdersPage() {
           </div>
         )}
 
-        {/* Order cards */}
         <div className="space-y-5">
           {orders.map((order) => {
             const isCancelled = order.status === "cancelled";
+            const isApproved = order.status === "approved";
             const isCancellingThis = cancelling === order.id;
             const justCancelled = cancelledId === order.id;
             const date = new Date(order.createdAt);
-            const dateStr = date.toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" });
-            const timeStr = date.toLocaleTimeString("en-PK", { hour: "2-digit", minute: "2-digit" });
 
             return (
               <div key={order.id} className="rounded-2xl overflow-hidden transition-all"
@@ -146,48 +207,53 @@ export default function OrdersPage() {
                   background: "#0b1120",
                   border: isCancelled
                     ? "1px solid rgba(239,68,68,0.2)"
-                    : "1px solid rgba(255,255,255,0.08)",
+                    : isApproved
+                      ? "1px solid rgba(34,197,94,0.2)"
+                      : "1px solid rgba(255,255,255,0.08)",
                   boxShadow: "0 8px 32px rgba(0,0,0,0.35)",
                   opacity: isCancelled ? 0.75 : 1,
                 }}>
 
-                {/* Top gradient bar */}
                 <div className="h-0.75 w-full"
                   style={{ background: isCancelled
                     ? "linear-gradient(to right,#ef4444,#b91c1c)"
-                    : "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)"
+                    : isApproved
+                      ? "linear-gradient(to right,#22c55e,#16a34a)"
+                      : "linear-gradient(to right,#2563eb,#4f46e5,#7c3aed)"
                   }} />
 
                 <div className="p-5">
-                  {/* Order meta row */}
-                  <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="flex items-start justify-between gap-3 mb-4 flex-wrap">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[10px] font-bold uppercase tracking-widest"
-                          style={{ color: "rgba(100,116,139,0.6)" }}>
-                          Order
-                        </span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(100,116,139,0.6)" }}>Order</span>
                         <span className="text-[10px] font-mono" style={{ color: "rgba(100,116,139,0.4)" }}>
-                          #{order.id.split("_")[1]}
+                          #{order.id.includes("_") ? order.id.split("_")[1] : order.id.slice(0, 8)}
                         </span>
                       </div>
                       <div className="flex items-center gap-1.5 text-xs" style={{ color: "rgba(100,116,139,0.6)" }}>
                         <Clock size={11} />
-                        {dateStr} at {timeStr}
+                        {date.toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })} at {date.toLocaleTimeString("en-PK", { hour: "2-digit", minute: "2-digit" })}
                       </div>
                     </div>
 
-                    {/* Status badge */}
-                    <span className="text-[11px] font-bold px-3 py-1 rounded-full shrink-0"
-                      style={isCancelled
-                        ? { background: "rgba(239,68,68,0.12)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.25)" }
-                        : { background: "rgba(34,197,94,0.1)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.25)" }
-                      }>
-                      {isCancelled ? "Cancelled" : "Pending"}
+                    <span className="text-[11px] font-bold px-3 py-1 rounded-full shrink-0 flex items-center gap-1.5"
+                      style={statusStyle(order.status)}>
+                      {isApproved && <CheckCircle2 size={11} />}
+                      {isCancelled && <XCircle size={11} />}
+                      {!isApproved && !isCancelled && <Clock size={11} />}
+                      {statusLabel(order.status)}
                     </span>
                   </div>
 
-                  {/* Items */}
+                  {isApproved && (
+                    <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-xl mb-4"
+                      style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", color: "rgba(74,222,128,0.8)" }}>
+                      <CheckCircle2 size={12} />
+                      Your order has been approved by Pixora! We&apos;ll be in touch shortly.
+                    </div>
+                  )}
+
                   <div className="space-y-2 mb-4">
                     {order.items.map((item) => (
                       <div key={item.id} className="flex justify-between items-center text-sm">
@@ -207,15 +273,15 @@ export default function OrdersPage() {
                     ))}
                   </div>
 
-                  {/* Divider */}
                   <div className="h-px mb-4" style={{ background: "rgba(255,255,255,0.06)" }} />
 
-                  {/* Footer row: total + cancel */}
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex items-center gap-2">
                       {isCancelled
                         ? <XCircle size={14} style={{ color: "#f87171" }} />
-                        : <PackageCheck size={14} style={{ color: "#4ade80" }} />
+                        : isApproved
+                          ? <CheckCircle2 size={14} style={{ color: "#4ade80" }} />
+                          : <PackageCheck size={14} style={{ color: "#fbbf24" }} />
                       }
                       <span className="font-extrabold text-base"
                         style={{ background: "linear-gradient(135deg,#60a5fa,#a78bfa)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
@@ -223,31 +289,19 @@ export default function OrdersPage() {
                       </span>
                     </div>
 
-                    {!isCancelled && (
-                      <button
-                        onClick={() => handleCancel(order)}
-                        disabled={isCancellingThis}
+                    {!isCancelled && !isApproved && (
+                      <button onClick={() => handleCancel(order)} disabled={isCancellingThis}
                         className="flex items-center gap-2 text-xs font-bold px-4 py-2 rounded-xl transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                         style={{ color: "rgba(248,113,113,0.8)", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}
-                        onMouseEnter={e => {
-                          if (!isCancellingThis) {
-                            (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)";
-                            (e.currentTarget as HTMLElement).style.color = "#fca5a5";
-                          }
-                        }}
-                        onMouseLeave={e => {
-                          (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)";
-                          (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.8)";
-                        }}>
+                        onMouseEnter={e => { if (!isCancellingThis) { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; } }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.8)"; }}>
                         {isCancellingThis
                           ? <><Loader2 size={11} className="animate-spin" /> Cancelling…</>
-                          : <><XCircle size={11} /> Cancel Order</>
-                        }
+                          : <><XCircle size={11} /> Cancel Order</>}
                       </button>
                     )}
                   </div>
 
-                  {/* Just-cancelled toast */}
                   {justCancelled && (
                     <p className="text-xs mt-3 px-3 py-2 rounded-xl"
                       style={{ color: "#fca5a5", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}>

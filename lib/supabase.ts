@@ -14,7 +14,7 @@ export type DbOrder = {
   items: { id: string; name: string; qty: number; price: number; category: string }[];
   total: number;
   notes: string | null;
-  status: "new" | "seen";
+  status: "new" | "pending" | "approved" | "cancelled";
   created_at: string;
 };
 

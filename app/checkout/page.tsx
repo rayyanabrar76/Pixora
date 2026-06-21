@@ -10,6 +10,7 @@ import { supabase } from "@/lib/supabase";
 
 export type StoredOrder = {
   id: string;
+  supabase_id?: string;
   items: { id: string; name: string; qty: number; price: number; category: string }[];
   total: number;
   firstName: string;
@@ -128,10 +129,23 @@ export default function CheckoutPage() {
         EJ_KEY
       );
 
+      /* Save order to Supabase for admin panel */
+      const { data: dbOrder } = await supabase.from("orders").insert({
+        user_id: user?.id ?? null,
+        user_email: form.email,
+        user_name: `${form.firstName} ${form.lastName}`.trim(),
+        phone: form.phone,
+        items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
+        total: totalPrice,
+        notes: form.notes || null,
+        status: "new",
+      }).select("id").single();
+
       /* Save order to localStorage for order history */
       if (user) {
         const order: StoredOrder = {
           id: `order_${Date.now()}`,
+          supabase_id: dbOrder?.id ?? undefined,
           items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
           total: totalPrice,
           firstName: form.firstName,
@@ -144,18 +158,6 @@ export default function CheckoutPage() {
         };
         saveOrder(user.id, order);
       }
-
-      /* Save order to Supabase for admin panel */
-      await supabase.from("orders").insert({
-        user_id: user?.id ?? null,
-        user_email: form.email,
-        user_name: `${form.firstName} ${form.lastName}`.trim(),
-        phone: form.phone,
-        items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
-        total: totalPrice,
-        notes: form.notes || null,
-        status: "new",
-      });
 
       setDone(true);
       clearCart();
