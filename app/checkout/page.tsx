@@ -115,21 +115,7 @@ export default function CheckoutPage() {
       .join("\n");
 
     try {
-      await emailjs.send(
-        EJ_SVC,
-        EJ_TPL,
-        {
-          name: `${form.firstName} ${form.lastName}`,
-          email: form.email,
-          phone: form.phone,
-          order_items: orderItems,
-          total: totalPrice.toLocaleString(),
-          notes: form.notes || "No notes",
-        },
-        EJ_KEY
-      );
-
-      /* EmailJS succeeded — save locally immediately so the user sees their order */
+      /* Save order immediately — always succeeds regardless of email */
       const localId = `order_${Date.now()}`;
       if (user) {
         const order: StoredOrder = {
@@ -149,6 +135,16 @@ export default function CheckoutPage() {
 
       setDone(true);
       clearCart();
+
+      /* Send email notification in background — never blocks checkout */
+      void emailjs.send(EJ_SVC, EJ_TPL, {
+        name: `${form.firstName} ${form.lastName}`,
+        email: form.email,
+        phone: form.phone,
+        order_items: orderItems,
+        total: totalPrice.toLocaleString(),
+        notes: form.notes || "No notes",
+      }, EJ_KEY).catch(() => { /* silently ignore — admin sees order in panel */ });
 
       /* Save to Supabase in the background — never blocks or breaks checkout */
       void (async () => {
