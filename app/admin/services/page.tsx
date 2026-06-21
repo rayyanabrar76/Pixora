@@ -216,7 +216,7 @@ function ServicesContent() {
         <div className="rounded-2xl overflow-hidden mb-6"
           style={{ background: "#0b1120", border: "1px solid rgba(37,99,235,0.25)" }}>
           <div className="h-0.75" style={{ background: "linear-gradient(to right,#fbbf24,#f59e0b)" }} />
-          <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <div>
               <label className="block text-xs font-semibold mb-1.5" style={{ color: errors.name ? "#f87171" : "rgba(148,163,184,0.7)" }}>Service Name *{errors.name && " — required"}</label>
@@ -320,7 +320,7 @@ function ServicesContent() {
           {dbServices.map((s, i) => (
             <div key={s.id}
               style={{ borderBottom: i < dbServices.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
-              className="flex items-center justify-between gap-4 px-5 py-4">
+              className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                   <p className="text-sm font-bold" style={{ color: "#e2e8f0" }}>{s.name}</p>
@@ -336,7 +336,7 @@ function ServicesContent() {
                   {s.details?.length > 0 && <span style={{ color: "rgba(100,116,139,0.35)" }}> · {s.details.length} bullet{s.details.length !== 1 ? "s" : ""}</span>}
                 </p>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Link href={`/shop/${s.slug}`} target="_blank"
                   className="w-8 h-8 rounded-lg flex items-center justify-center transition-all"
                   style={{ background: "rgba(34,197,94,0.08)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.2)" }}
@@ -352,15 +352,15 @@ function ServicesContent() {
                   <Pencil size={13} />
                 </button>
                 {confirmDeleteId === s.id ? (
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="text-xs font-semibold" style={{ color: "#f87171" }}>Sure?</span>
                     <button onClick={() => handleDelete(s.id)} disabled={deletingId === s.id}
-                      className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg disabled:opacity-50"
+                      className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-50"
                       style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
                       {deletingId === s.id ? <Loader2 size={11} className="animate-spin" /> : "Delete"}
                     </button>
                     <button onClick={() => setConfirmDeleteId(null)}
-                      className="text-xs font-bold px-2.5 py-1 rounded-lg"
+                      className="text-xs font-bold px-2.5 py-1.5 rounded-lg"
                       style={{ background: "rgba(255,255,255,0.05)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}>
                       Cancel
                     </button>

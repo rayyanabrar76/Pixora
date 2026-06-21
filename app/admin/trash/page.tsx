@@ -115,7 +115,7 @@ export default function AdminTrashPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0 flex-wrap">
+              <div className="flex items-center gap-2 flex-wrap">
                 {/* Restore */}
                 <button onClick={() => handleRestore(s.id)} disabled={restoringId === s.id}
                   className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg disabled:opacity-50 transition-all"
@@ -130,15 +130,15 @@ export default function AdminTrashPage() {
                 {/* Permanent delete — only for non-static services */}
                 {!isStatic && (
                   confirmDeleteId === s.id ? (
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="text-xs font-semibold" style={{ color: "#f87171" }}>Sure?</span>
                       <button onClick={() => handlePermanentDelete(s.id)} disabled={deletingId === s.id}
-                        className="flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg disabled:opacity-50"
+                        className="flex items-center gap-1 text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-50"
                         style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
                         {deletingId === s.id ? <Loader2 size={11} className="animate-spin" /> : "Delete forever"}
                       </button>
                       <button onClick={() => setConfirmDeleteId(null)}
-                        className="text-xs font-bold px-2.5 py-1 rounded-lg"
+                        className="text-xs font-bold px-2.5 py-1.5 rounded-lg"
                         style={{ background: "rgba(255,255,255,0.05)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}>
                         Cancel
                       </button>
