@@ -311,11 +311,13 @@ export default function CheckoutPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/orders"
-              className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-white text-sm transition-all hover:scale-[1.03]"
-              style={{ background: "rgba(37,99,235,0.15)", border: "1px solid rgba(37,99,235,0.3)" }}>
-              View My Orders
-            </Link>
+            {user && (
+              <Link href="/orders"
+                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-white text-sm transition-all hover:scale-[1.03]"
+                style={{ background: "rgba(37,99,235,0.15)", border: "1px solid rgba(37,99,235,0.3)" }}>
+                View My Orders
+              </Link>
+            )}
             <Link href="/shop"
               className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-xl text-white text-sm transition-all hover:scale-[1.03]"
               style={{ background: "linear-gradient(135deg,#2563eb,#4f46e5)", boxShadow: "0 4px 24px rgba(37,99,235,0.5)" }}>
