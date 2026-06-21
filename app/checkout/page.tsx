@@ -78,6 +78,11 @@ export default function CheckoutPage() {
     notes: "",
   });
 
+  /* Scroll to top when order is placed */
+  useEffect(() => {
+    if (done) window.scrollTo({ top: 0, behavior: "instant" });
+  }, [done]);
+
   /* Pre-fill form from Clerk user once loaded */
   useEffect(() => {
     if (!isLoaded || !user) return;
