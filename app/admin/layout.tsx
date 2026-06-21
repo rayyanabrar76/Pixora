@@ -5,17 +5,18 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ShieldCheck, LayoutDashboard, Package, Trash2, ArrowLeft, Menu, X, ShoppingBag,
+  ShieldCheck, LayoutDashboard, Package, Trash2, ArrowLeft, Menu, X, ShoppingBag, Users,
 } from "lucide-react";
 
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
   .split(",").map(e => e.trim()).filter(Boolean);
 
 const NAV = [
-  { label: "Dashboard", href: "/admin",          icon: LayoutDashboard },
-  { label: "Services",  href: "/admin/services", icon: Package },
-  { label: "Orders",    href: "/admin/orders",   icon: ShoppingBag },
-  { label: "Trash",     href: "/admin/trash",    icon: Trash2 },
+  { label: "Dashboard", href: "/admin",            icon: LayoutDashboard },
+  { label: "Services",  href: "/admin/services",   icon: Package },
+  { label: "Orders",    href: "/admin/orders",     icon: ShoppingBag },
+  { label: "Customers", href: "/admin/customers",  icon: Users },
+  { label: "Trash",     href: "/admin/trash",      icon: Trash2 },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
