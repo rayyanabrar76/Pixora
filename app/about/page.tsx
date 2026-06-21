@@ -82,8 +82,15 @@ export default function AboutPage() {
                   style={{ filter: "drop-shadow(0 0 40px rgba(0,151,178,0.6))" }}>
                   <PMark size={96} />
                 </div>
-                <p className="font-extrabold text-xl" style={{ color: "#e2e8f0" }}>Fahadamina Enterprises</p>
-                <p className="text-sm mt-1" style={{ color: "rgba(148,163,184,0.6)" }}>Digital Agency · Pakistan</p>
+                <p style={{
+                  fontFamily: "var(--font-brand, sans-serif)",
+                  fontWeight: 900,
+                  color: "#0097B2",
+                  fontSize: "1.1rem",
+                  letterSpacing: "0.04em",
+                  lineHeight: 1.2,
+                }}>FAHADAMINA<br />ENTERPRISES</p>
+                <p className="text-xs mt-2" style={{ color: "rgba(148,163,184,0.5)" }}>Digital Agency · Pakistan</p>
               </div>
             </div>
             {/* Grid pattern */}
