@@ -4,9 +4,10 @@ import { useParams } from "next/navigation";
 import { SERVICES, type Service } from "@/lib/services";
 import { supabase, type DbService } from "@/lib/supabase";
 import { useCart } from "@/context/CartContext";
+import { useUser } from "@clerk/nextjs";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ShoppingCart, Check, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react";
+import { ShoppingCart, Check, ArrowLeft, CheckCircle2, Loader2, Pencil } from "lucide-react";
 import ServiceBanner from "@/components/ServiceBanner";
 import ProductCard from "@/components/ProductCard";
 
@@ -30,7 +31,11 @@ export default function ServiceDetail() {
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
+  const { user } = useUser();
   const [added, setAdded] = useState(false);
+
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
+  const isAdmin = adminEmails.includes(user?.emailAddresses[0]?.emailAddress ?? "");
 
   useEffect(() => {
     supabase.from("services").select("*").eq("slug", slug).single()
@@ -84,6 +89,16 @@ export default function ServiceDetail() {
 
   return (
     <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}>
+
+      {/* Admin floating edit button */}
+      {isAdmin && (
+        <Link href={`/admin/services?edit=${slug}`}
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shadow-2xl transition-all hover:scale-105"
+          style={{ background: "linear-gradient(135deg,#d97706,#b45309)", color: "#fff", boxShadow: "0 4px 20px rgba(180,83,9,0.4)" }}>
+          <Pencil size={14} />
+          Edit Service
+        </Link>
+      )}
 
       {/* Glow orbs */}
       <div className="fixed top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-[0.07] pointer-events-none"

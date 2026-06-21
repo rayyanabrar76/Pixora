@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SERVICES } from "@/lib/services";
 import { supabase, type DbService } from "@/lib/supabase";
@@ -59,7 +60,8 @@ function CustomSelect({ value, onChange, options }: { value: string; onChange: (
   );
 }
 
-export default function AdminServicesPage() {
+function ServicesContent() {
+  const searchParams = useSearchParams();
   const [dbServices, setDbServices] = useState<DbService[]>([]);
   const [form, setForm] = useState(EMPTY_FORM);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -77,6 +79,16 @@ export default function AdminServicesPage() {
   };
 
   useEffect(() => { loadServices(); }, []);
+
+  // Auto-open edit form when ?edit=slug is in the URL
+  useEffect(() => {
+    const editSlug = searchParams.get("edit");
+    if (!editSlug || dbServices.length === 0) return;
+    const s = dbServices.find(d => d.slug === editSlug);
+    if (s) {
+      handleEdit(s);
+    }
+  }, [searchParams, dbServices]);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -368,5 +380,13 @@ export default function AdminServicesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminServicesPage() {
+  return (
+    <Suspense>
+      <ServicesContent />
+    </Suspense>
   );
 }
