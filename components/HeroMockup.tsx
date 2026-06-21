@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { Star, CheckCircle, TrendingUp, ArrowUpRight, Gauge, Smartphone, Rocket, Palette, Package, FileImage } from "lucide-react";
 
 /* ─── CSS Animations ───────────────────────────────────── */
@@ -525,16 +526,9 @@ function Mock3() {
 
           {/* Business card */}
           <div className="relative z-10 shadow-2xl rounded-lg overflow-hidden flex" style={{width:220,height:115}}>
-            <div className="flex-1 bg-[#0f172a] flex flex-col items-center justify-center gap-1.5 p-3">
-              <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-                <rect width="40" height="40" rx="9" fill="#0f172a"/>
-                <rect width="40" height="40" rx="9" fill="white" fillOpacity="0.1"/>
-                <path d="M8,8 L8,32 L13,32 L13,22 L26,22 L28,20 L28,10 L26,8 Z" fill="white"/>
-                <path d="M13,12 L24,12 L25,13 L25,19 L24,20 L13,20 Z" fill="#0f172a"/>
-                <circle cx="33" cy="30" r="3.5" fill="#3b82f6"/>
-              </svg>
-              <div className="text-white text-[7px] font-extrabold tracking-[1px]">FAHADAMINA</div>
-              <div className="text-blue-400 text-[6px] tracking-wider">ENTERPRISES</div>
+            <div className="flex-1 bg-[#0f172a] flex flex-col items-center justify-center gap-1 p-3">
+              <Image src="/logo_transparent.png" alt="logo" width={32} height={32} style={{ objectFit: "contain" }} />
+              <div style={{ fontFamily: "var(--font-brand, sans-serif)", fontWeight: 900, color: "#0097B2", fontSize: "5.5px", letterSpacing: "0.5px", lineHeight: 1, textAlign: "center" }}>FAHADAMINAENTERPRISES</div>
             </div>
             <div className="w-22.5 bg-[#1d4ed8] flex flex-col justify-between p-2.5">
               <div className="w-full h-1.5 bg-white/30 rounded"/>
