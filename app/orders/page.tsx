@@ -287,7 +287,7 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-2 text-xs px-3 py-2 rounded-xl mb-4"
                       style={{ background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", color: "rgba(74,222,128,0.8)" }}>
                       <CheckCircle2 size={12} />
-                      Your order has been approved by Pixora! We&apos;ll be in touch shortly.
+                      Your order has been approved by Fahadamina Enterprises! We&apos;ll be in touch shortly.
                     </div>
                   )}
 
@@ -342,7 +342,7 @@ export default function OrdersPage() {
                   {justCancelled && (
                     <p className="text-xs mt-3 px-3 py-2 rounded-xl"
                       style={{ color: "#fca5a5", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}>
-                      Order cancelled — Pixora has been notified.
+                      Order cancelled — Fahadamina Enterprises has been notified.
                     </p>
                   )}
                 </div>

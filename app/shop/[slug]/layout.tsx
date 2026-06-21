@@ -8,16 +8,16 @@ export async function generateMetadata(
   const service = SERVICES.find((s) => s.slug === slug);
   if (!service) return {};
   return {
-    title: `${service.name} — Pixora`,
+    title: `${service.name} — Fahadamina Enterprises`,
     description: service.description,
     openGraph: {
-      title: `${service.name} — Pixora`,
+      title: `${service.name} — Fahadamina Enterprises`,
       description: service.description,
-      url: `https://pixorau.vercel.app/shop/${slug}`,
+      url: `https://fahadaminaenterprises.com/shop/${slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${service.name} — Pixora`,
+      title: `${service.name} — Fahadamina Enterprises`,
       description: service.description,
     },
   };

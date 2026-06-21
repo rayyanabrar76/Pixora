@@ -51,7 +51,7 @@ const FAQS = [
   },
   {
     q: "Is my payment information secure?",
-    a: "Yes. All payments are processed by Stripe, which is PCI-DSS Level 1 compliant — the highest level of payment security certification available. Pixora never sees or stores your card number.",
+    a: "Yes. All payments are processed by Stripe, which is PCI-DSS Level 1 compliant — the highest level of payment security certification available. Fahadamina Enterprises never sees or stores your card number.",
   },
 ];
 
@@ -82,7 +82,7 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="text-base leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>
-            Everything you need to know about working with Pixora. Can't find what you're looking for? Reach out to us directly.
+            Everything you need to know about working with Fahadamina Enterprises. Can't find what you're looking for? Reach out to us directly.
           </p>
         </div>
       </section>

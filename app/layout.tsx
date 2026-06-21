@@ -6,20 +6,20 @@ import SiteChrome from "@/components/SiteChrome";
 import TopProgress from "@/components/TopProgress";
 
 export const metadata: Metadata = {
-  title: "Pixora - Digital Services",
+  title: "Fahadamina Enterprises - Digital Services",
   description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more. Based in Pakistan.",
-  metadataBase: new URL("https://pixorau.vercel.app"),
+  metadataBase: new URL("https://fahadaminaenterprises.com"),
   openGraph: {
-    title: "Pixora - Digital Services",
+    title: "Fahadamina Enterprises - Digital Services",
     description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more.",
-    url: "https://pixorau.vercel.app",
-    siteName: "Pixora",
+    url: "https://fahadaminaenterprises.com",
+    siteName: "Fahadamina Enterprises",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pixora - Digital Services",
+    title: "Fahadamina Enterprises - Digital Services",
     description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more.",
   },
 };

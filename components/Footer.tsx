@@ -29,9 +29,10 @@ export default function Footer() {
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-5">
               <PMark size={64} />
-              <span className="text-5xl font-extrabold tracking-tight">
-                <span className="text-white">Pix</span>
-                <span className="text-blue-400">ora</span>
+              <span className="font-extrabold tracking-tight leading-tight">
+                <span className="text-white text-3xl">Fahadamina</span>
+                <br />
+                <span className="text-2xl" style={{ color: "#0097B2", letterSpacing: "0.05em" }}>ENTERPRISES</span>
               </span>
             </div>
             <p className="text-gray-500 text-lg max-w-lg leading-relaxed">
@@ -188,7 +189,7 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-gray-800/50 py-5 px-6">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600">
-          <span>© 2026 <span className="text-gray-400 font-semibold">Pixora</span>. All rights reserved.</span>
+          <span>© 2026 <span className="text-gray-400 font-semibold">Fahadamina Enterprises</span>. All rights reserved.</span>
           <span>Designed &amp; built with ❤️ in Pakistan</span>
         </div>
       </div>

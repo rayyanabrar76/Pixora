@@ -30,7 +30,7 @@ const SECTIONS = [
       },
       {
         heading: "Payment Processing",
-        body: "Billing information is passed directly to Stripe, our payment processor. Pixora never sees or stores your full card number. Stripe is PCI-DSS compliant.",
+        body: "Billing information is passed directly to Stripe, our payment processor. Fahadamina Enterprises never sees or stores your full card number. Stripe is PCI-DSS compliant.",
       },
       {
         heading: "Marketing Communications",
@@ -70,7 +70,7 @@ const SECTIONS = [
       },
       {
         heading: "Stripe (Payments)",
-        body: "All payment transactions are handled by Stripe. Your card data goes directly to Stripe's secure servers and is never transmitted to or stored by Pixora.",
+        body: "All payment transactions are handled by Stripe. Your card data goes directly to Stripe's secure servers and is never transmitted to or stored by Fahadamina Enterprises.",
       },
       {
         heading: "Google Drive",
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p className="text-base leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>
-            We take your privacy seriously. This policy explains what data Pixora collects, how we use it, and the rights you have over your information.
+            We take your privacy seriously. This policy explains what data Fahadamina Enterprises collects, how we use it, and the rights you have over your information.
           </p>
           <p className="text-xs mt-4" style={{ color: "rgba(100,116,139,0.6)" }}>
             Last updated: June 2026
@@ -139,7 +139,7 @@ export default function PrivacyPage() {
           <div className="rounded-2xl p-6"
             style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.1),rgba(79,70,229,0.07))", border: "1px solid rgba(37,99,235,0.2)" }}>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(203,213,225,0.85)" }}>
-              This Privacy Policy applies to all services offered by Pixora, a digital agency based in Pakistan, accessible at this website. By using our services, you agree to the collection and use of information in accordance with this policy. If you do not agree, please do not use our services.
+              This Privacy Policy applies to all services offered by Fahadamina Enterprises, a digital agency based in Pakistan, accessible at this website. By using our services, you agree to the collection and use of information in accordance with this policy. If you do not agree, please do not use our services.
             </p>
           </div>
 

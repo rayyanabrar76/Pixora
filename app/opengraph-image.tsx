@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Pixora - Digital Services";
+export const alt = "Fahadamina Enterprises - Digital Services";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -22,16 +22,18 @@ export default function Image() {
 
         {/* Logo row */}
         <div style={{ display: "flex", alignItems: "center", gap: 28, marginBottom: 32 }}>
-          {/* Real P mark logo */}
-          <svg width="96" height="96" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="40" height="40" rx="9" fill="#0f172a" />
-            <path d="M8,8 L8,32 L13,32 L13,22 L26,22 L28,20 L28,10 L26,8 Z" fill="white" />
-            <path d="M13,12 L24,12 L25,13 L25,19 L24,20 L13,20 Z" fill="#0f172a" />
-            <circle cx="33" cy="30" r="3.5" fill="#3b82f6" />
+          {/* F mark logo */}
+          <svg width="96" height="106" viewBox="0 0 200 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="12" y="12" width="36" height="196" rx="6" fill="#0097B2" />
+            <rect x="12" y="12" width="168" height="46" rx="6" fill="#0097B2" />
+            <rect x="12" y="94" width="116" height="38" rx="6" fill="#0097B2" />
+            <circle cx="182" cy="68" r="14" fill="#0097B2" />
+            <circle cx="154" cy="128" r="21" fill="#0097B2" />
+            <circle cx="108" cy="188" r="30" fill="#0097B2" />
           </svg>
-          <div style={{ display: "flex", alignItems: "baseline" }}>
-            <span style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, color: "white" }}>Pix</span>
-            <span style={{ fontSize: 84, fontWeight: 900, letterSpacing: -3, color: "#60a5fa" }}>ora</span>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <span style={{ fontSize: 72, fontWeight: 900, letterSpacing: -2, color: "white", lineHeight: 1 }}>Fahadamina</span>
+            <span style={{ fontSize: 32, fontWeight: 800, letterSpacing: 4, color: "#0097B2" }}>ENTERPRISES</span>
           </div>
         </div>
 
@@ -51,7 +53,7 @@ export default function Image() {
 
         {/* Bottom URL */}
         <p style={{ position: "absolute", bottom: 36, color: "rgba(100,116,139,0.6)", fontSize: 18, fontWeight: 600, letterSpacing: 1 }}>
-          pixorau.vercel.app
+          fahadaminaenterprises.com
         </p>
       </div>
     ),

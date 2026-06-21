@@ -40,7 +40,7 @@ export default function AboutPage() {
           <span className="inline-flex items-center gap-2 text-[11px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest mb-5"
             style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)", color: "#60a5fa" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            About Pixora
+            About Fahadamina Enterprises
           </span>
           <h1 className="text-5xl font-extrabold mb-5 leading-tight"
             style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
@@ -82,7 +82,7 @@ export default function AboutPage() {
                   style={{ filter: "drop-shadow(0 0 40px rgba(37,99,235,0.5))" }}>
                   <PMark size={96} />
                 </div>
-                <p className="font-extrabold text-xl" style={{ color: "#e2e8f0" }}>Pixora</p>
+                <p className="font-extrabold text-xl" style={{ color: "#e2e8f0" }}>Fahadamina Enterprises</p>
                 <p className="text-sm mt-1" style={{ color: "rgba(148,163,184,0.6)" }}>Digital Agency · Pakistan</p>
               </div>
             </div>
@@ -104,7 +104,7 @@ export default function AboutPage() {
               Built to help local businesses compete online
             </h2>
             <p className="text-sm leading-relaxed mb-4" style={{ color: "rgba(148,163,184,0.75)" }}>
-              Pixora was founded with a simple mission: make professional digital services accessible to every business, not just the big ones. We believe a small shop in a small city deserves the same online quality as a multinational brand.
+              Fahadamina Enterprises was founded with a simple mission: make professional digital services accessible to every business, not just the big ones. We believe a small shop in a small city deserves the same online quality as a multinational brand.
             </p>
             <p className="text-sm leading-relaxed mb-7" style={{ color: "rgba(148,163,184,0.75)" }}>
               From graphic design to full website development, we handle every aspect of your digital presence with care, speed, and competitive pricing built for the Pakistani market.
@@ -162,7 +162,7 @@ export default function AboutPage() {
             </span>
             <h2 className="text-3xl font-extrabold"
               style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              People Behind Pixora
+              People Behind Fahadamina Enterprises
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

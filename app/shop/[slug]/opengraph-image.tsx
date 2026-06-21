@@ -19,7 +19,7 @@ export default function Image({ params }: { params: { slug: string } }) {
   if (!service) {
     return new ImageResponse(
       <div style={{ background: "#060d1f", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <span style={{ color: "white", fontSize: 48 }}>Pixora</span>
+        <span style={{ color: "white", fontSize: 48 }}>Fahadamina Enterprises</span>
       </div>,
       { ...size }
     );
@@ -50,7 +50,7 @@ export default function Image({ params }: { params: { slug: string } }) {
         {/* Dark overlay on right half for contrast */}
         <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 480, background: "rgba(0,0,0,0.22)" }} />
 
-        {/* Pixora logo — top left */}
+        {/* Fahadamina Enterprises logo — top left */}
         <div style={{ position: "absolute", top: 44, left: 52, display: "flex", alignItems: "center", gap: 16 }}>
           <svg width="52" height="52" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="40" height="40" rx="9" fill="rgba(0,0,0,0.35)" />
@@ -151,7 +151,7 @@ export default function Image({ params }: { params: { slug: string } }) {
           position: "absolute", bottom: 32, left: 52,
           color: "rgba(255,255,255,0.4)", fontSize: 16, fontWeight: 600, letterSpacing: 1,
         }}>
-          pixorau.vercel.app
+          fahadaminaenterprises.com
         </div>
       </div>
     ),

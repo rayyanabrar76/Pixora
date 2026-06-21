@@ -88,7 +88,7 @@ export default function ShippingPage() {
             Delivery Policy
           </h1>
           <p className="text-base leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>
-            All Pixora deliverables are 100% digital. No physical shipping is involved. Files are sent via email or Google Drive.
+            All Fahadamina Enterprises deliverables are 100% digital. No physical shipping is involved. Files are sent via email or Google Drive.
           </p>
           <p className="text-xs mt-4" style={{ color: "rgba(100,116,139,0.6)" }}>
             Last updated: June 2026

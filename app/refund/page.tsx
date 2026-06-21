@@ -97,7 +97,7 @@ export default function RefundPage() {
             </div>
             <div className="px-6 py-5">
               <p className="text-sm leading-relaxed mb-3" style={{ color: "rgba(148,163,184,0.75)" }}>
-                Every service at Pixora includes unlimited free revisions within the agreed project scope. A revision is a change or refinement to the existing concept — it is not a request for an entirely different direction after work has begun.
+                Every service at Fahadamina Enterprises includes unlimited free revisions within the agreed project scope. A revision is a change or refinement to the existing concept — it is not a request for an entirely different direction after work has begun.
               </p>
               <p className="text-sm leading-relaxed" style={{ color: "rgba(148,163,184,0.75)" }}>
                 If you request changes that fall outside the original brief (for example, switching from a minimalist logo to an illustrative one after the first draft), this may require a new order or an additional fee, which will be agreed with you beforehand.

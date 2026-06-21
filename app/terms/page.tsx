@@ -7,12 +7,12 @@ const SECTIONS = [
     title: "Acceptance of Terms",
     body: `By accessing our website or placing an order, you confirm that you have read, understood, and agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you must not use our services.
 
-These terms apply to all visitors, clients, and anyone who accesses or uses Pixora's services. We reserve the right to update these terms at any time, and your continued use of our services constitutes acceptance of any changes.`,
+These terms apply to all visitors, clients, and anyone who accesses or uses Fahadamina Enterprises's services. We reserve the right to update these terms at any time, and your continued use of our services constitutes acceptance of any changes.`,
   },
   {
     Icon: Briefcase,
     title: "Description of Services",
-    body: `Pixora is a digital services agency based in Pakistan offering a range of online services including but not limited to: logo and brand identity design, website design and development, social media content creation and management, search engine optimisation (SEO), video editing and motion graphics, and digital marketing services.
+    body: `Fahadamina Enterprises is a digital services agency based in Pakistan offering a range of online services including but not limited to: logo and brand identity design, website design and development, social media content creation and management, search engine optimisation (SEO), video editing and motion graphics, and digital marketing services.
 
 All services are delivered digitally. There are no physical products involved. Specific deliverables, timelines, and scope are described on each individual service listing and confirmed at the time of order.`,
   },
@@ -33,18 +33,18 @@ Delays caused by failure to meet these responsibilities do not entitle you to a 
     title: "Intellectual Property",
     body: `Upon receipt of full payment, you own the final deliverables created specifically for you. This includes all source files (AI, PSD, Figma, etc.) as detailed in your order.
 
-Pixora retains the right to display completed work in our portfolio and on our website as examples of our service quality, unless you formally request confidentiality in writing before delivery.
+Fahadamina Enterprises retains the right to display completed work in our portfolio and on our website as examples of our service quality, unless you formally request confidentiality in writing before delivery.
 
-Any third-party assets, stock assets, fonts, or libraries used in your project are subject to their respective licences. Pixora will inform you of any such assets and their applicable licence terms. If you require fully custom assets with no third-party dependencies, please specify this in your brief.
+Any third-party assets, stock assets, fonts, or libraries used in your project are subject to their respective licences. Fahadamina Enterprises will inform you of any such assets and their applicable licence terms. If you require fully custom assets with no third-party dependencies, please specify this in your brief.
 
-Work remains the intellectual property of Pixora until full payment has been received.`,
+Work remains the intellectual property of Fahadamina Enterprises until full payment has been received.`,
   },
   {
     Icon: AlertTriangle,
     title: "Limitation of Liability",
-    body: `Pixora provides services on an "as is" basis. We make no warranties, expressed or implied, beyond those explicitly stated in these terms or on individual service pages.
+    body: `Fahadamina Enterprises provides services on an "as is" basis. We make no warranties, expressed or implied, beyond those explicitly stated in these terms or on individual service pages.
 
-To the fullest extent permitted by applicable law, Pixora shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our services or deliverables, including but not limited to loss of revenue, loss of data, or business interruption.
+To the fullest extent permitted by applicable law, Fahadamina Enterprises shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our services or deliverables, including but not limited to loss of revenue, loss of data, or business interruption.
 
 Our maximum liability to you for any claim arising out of or relating to these terms or our services shall not exceed the total amount you paid for the specific order giving rise to the claim.`,
   },
@@ -89,7 +89,7 @@ export default function TermsPage() {
             Terms of Service
           </h1>
           <p className="text-base leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>
-            Please read these terms carefully before using our services. They govern the relationship between you and Pixora.
+            Please read these terms carefully before using our services. They govern the relationship between you and Fahadamina Enterprises.
           </p>
           <p className="text-xs mt-4" style={{ color: "rgba(100,116,139,0.6)" }}>
             Last updated: June 2026
