@@ -1,11 +1,27 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
-import { SERVICES, CATEGORIES } from "@/lib/services";
+import { SERVICES, CATEGORIES, type Service } from "@/lib/services";
+import { supabase, type DbService } from "@/lib/supabase";
+
+function dbToService(s: DbService): Service {
+  return {
+    id: `db_${s.id}`,
+    slug: s.slug,
+    name: s.name,
+    category: s.category,
+    price: s.price,
+    priceLabel: s.price_label,
+    description: s.description,
+    details: [],
+    badge: s.badge ?? undefined,
+    icon: s.icon,
+  };
+}
 
 function ShopContent() {
   const params = useSearchParams();
@@ -13,22 +29,34 @@ function ShopContent() {
   const initialSearch = params.get("search")   || "";
   const [activeCategory, setActiveCategory] = useState(initialCat);
   const [search, setSearch] = useState(initialSearch);
+  const [dbServices, setDbServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    supabase.from("services").select("*").order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setDbServices(data.map(dbToService)); });
+  }, []);
+
+  const allServices = useMemo(() => [...SERVICES, ...dbServices], [dbServices]);
+
+  const allCategories = useMemo(() => {
+    const extra = dbServices.map(s => s.category).filter(c => !CATEGORIES.includes(c));
+    return [...CATEGORIES, ...new Set(extra)];
+  }, [dbServices]);
 
   const filtered = useMemo(() =>
-    SERVICES.filter((s) => {
+    allServices.filter((s) => {
       const matchesCat    = activeCategory === "All" || s.category === activeCategory;
       const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
                             s.description.toLowerCase().includes(search.toLowerCase());
       return matchesCat && matchesSearch;
     }),
-  [activeCategory, search]);
+  [allServices, activeCategory, search]);
 
   return (
     <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}>
 
       {/* Page hero */}
       <div className="relative overflow-hidden pt-16 pb-12 px-4">
-        {/* glow orbs */}
         <div className="absolute top-0 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-10 pointer-events-none"
           style={{ background: "radial-gradient(circle,#2563eb,transparent)" }} />
         <div className="absolute top-0 right-1/3 w-80 h-80 rounded-full blur-3xl opacity-10 pointer-events-none"
@@ -56,7 +84,6 @@ function ShopContent() {
 
         {/* Search + filters row */}
         <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          {/* Search */}
           <div className="relative flex-1 max-w-sm">
             <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
               style={{ color: "rgba(100,116,139,0.7)" }} />
@@ -84,7 +111,7 @@ function ShopContent() {
 
         {/* Category pills */}
         <div className="flex gap-2 flex-wrap mb-10">
-          {CATEGORIES.map((cat) => (
+          {allCategories.map((cat) => (
             <button key={cat} onClick={() => setActiveCategory(cat)}
               className="px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
               style={activeCategory === cat ? {
