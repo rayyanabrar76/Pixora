@@ -619,6 +619,7 @@ function UserMenu() {
   const { signOut } = useClerk();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+  const [isSubAdmin, setIsSubAdmin] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -633,6 +634,18 @@ function UserMenu() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+    const email = user.emailAddresses[0]?.emailAddress ?? "";
+    const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
+    if (adminEmails.includes(email)) return; // already main admin, no need to check
+    fetch("/api/admin/sub-admins/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }).then(r => r.json()).then(d => setIsSubAdmin(!!d.allowed)).catch(() => {});
+  }, [user]);
+
   if (!user) return null;
 
   const initials = ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase() || user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "U";
@@ -640,6 +653,7 @@ function UserMenu() {
   const email = user.emailAddresses[0]?.emailAddress ?? "";
   const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
   const isAdmin = adminEmails.includes(email);
+  const hasAdminAccess = isAdmin || isSubAdmin;
 
   const handleToggle = () => {
     if (!open && btnRef.current) {
@@ -712,6 +726,12 @@ function UserMenu() {
                       Admin
                     </span>
                   )}
+                  {isSubAdmin && (
+                    <span className="text-[9px] font-extrabold px-1.5 py-0.5 rounded-md shrink-0 uppercase tracking-wider"
+                      style={{ background: "rgba(0,151,178,0.15)", color: "#0097B2", border: "1px solid rgba(0,151,178,0.3)" }}>
+                      Sub-admin
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs truncate mt-0.5" style={{ color: "rgba(100,116,139,0.8)" }}>{email}</p>
               </div>
@@ -719,7 +739,7 @@ function UserMenu() {
 
             {/* Menu items */}
             <div className="py-2">
-              {isAdmin && (
+              {hasAdminAccess && (
                 <a href="/admin" onClick={() => setOpen(false)}
                   className="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
                   style={{ color: "#fbbf24", textDecoration: "none" }}
