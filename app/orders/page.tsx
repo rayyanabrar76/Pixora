@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { ArrowRight, PackageCheck, Clock, XCircle, ShoppingBag, Loader2, CheckCircle2 } from "lucide-react";
+import { ArrowRight, PackageCheck, Clock, XCircle, ShoppingBag, Loader2, CheckCircle2, Trash2 } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import { type StoredOrder, getOrders, updateOrderStatus } from "@/app/checkout/page";
 import { supabase, type DbOrder } from "@/lib/supabase";
@@ -30,6 +30,8 @@ export default function OrdersPage() {
   const [fetching, setFetching] = useState(true);
   const [cancelling, setCancelling] = useState<string | null>(null);
   const [cancelledId, setCancelledId] = useState<string | null>(null);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -118,6 +120,17 @@ export default function OrdersPage() {
     setCancelledId(order.id);
     setTimeout(() => setCancelledId(null), 3000);
     setCancelling(null);
+  };
+
+  const handleClearHistory = async () => {
+    if (!user) return;
+    setClearing(true);
+    await supabase.from("orders").delete().eq("user_id", user.id);
+    localStorage.removeItem(`pixora_orders_${user.id}`);
+    setSbOrders([]);
+    setLocalOrders([]);
+    setConfirmClear(false);
+    setClearing(false);
   };
 
   if (!isLoaded || fetching) {
@@ -315,7 +328,7 @@ export default function OrdersPage() {
         </div>
 
         {orders.length > 0 && (
-          <div className="mt-8 text-center">
+          <div className="mt-8 flex items-center justify-between flex-wrap gap-4">
             <Link href="/shop"
               className="inline-flex items-center gap-2 text-sm font-medium"
               style={{ color: "rgba(100,116,139,0.5)" }}
@@ -323,6 +336,31 @@ export default function OrdersPage() {
               onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = "rgba(100,116,139,0.5)"}>
               ← Continue Shopping
             </Link>
+
+            {/* Clear history */}
+            {!confirmClear ? (
+              <button onClick={() => setConfirmClear(true)}
+                className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-xl transition-all"
+                style={{ color: "rgba(248,113,113,0.6)", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.06)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.6)"; }}>
+                <Trash2 size={11} /> Clear History
+              </button>
+            ) : (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-semibold" style={{ color: "#f87171" }}>Remove all orders permanently?</span>
+                <button onClick={handleClearHistory} disabled={clearing}
+                  className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl disabled:opacity-60"
+                  style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
+                  {clearing ? <><Loader2 size={11} className="animate-spin" /> Clearing…</> : "Yes, clear all"}
+                </button>
+                <button onClick={() => setConfirmClear(false)}
+                  className="text-xs font-bold px-3 py-1.5 rounded-xl"
+                  style={{ background: "rgba(255,255,255,0.05)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
