@@ -125,10 +125,15 @@ export default function OrdersPage() {
   const handleClearHistory = async () => {
     if (!user) return;
     setClearing(true);
-    await supabase.from("orders").delete().eq("user_id", user.id);
-    localStorage.removeItem(`pixora_orders_${user.id}`);
-    setSbOrders([]);
-    setLocalOrders([]);
+    // Only delete approved and cancelled — keep pending orders
+    await supabase.from("orders").delete()
+      .eq("user_id", user.id)
+      .in("status", ["approved", "cancelled"]);
+    setSbOrders(prev => prev.filter(o => o.status !== "approved" && o.status !== "cancelled"));
+    // Filter localStorage the same way
+    const remaining = getOrders(user.id).filter(o => o.status === "pending");
+    localStorage.setItem(`pixora_orders_${user.id}`, JSON.stringify(remaining));
+    setLocalOrders(remaining);
     setConfirmClear(false);
     setClearing(false);
   };
@@ -348,7 +353,7 @@ export default function OrdersPage() {
               </button>
             ) : (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold" style={{ color: "#f87171" }}>Remove all orders permanently?</span>
+                <span className="text-xs font-semibold" style={{ color: "#f87171" }}>Remove approved &amp; cancelled orders?</span>
                 <button onClick={handleClearHistory} disabled={clearing}
                   className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-xl disabled:opacity-60"
                   style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
