@@ -98,6 +98,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=         <-- Supabase anon public key
 1. Open .env.local and fill in all values above
 2. Go to Vercel dashboard → Project → Settings → Environment Variables
 3. Add every variable from .env.local to Vercel (same names, same values)
+   - Vercel may show a warning for NEXT_PUBLIC_ variables saying they are visible in the browser
+   - This is expected — just click "Mark as Safe" and continue
 4. Redeploy: Vercel dashboard → Deployments → Redeploy
 
 Done. The site is fully connected to the client's accounts.
