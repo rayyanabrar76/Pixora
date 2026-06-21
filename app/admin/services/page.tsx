@@ -227,6 +227,27 @@ function ServicesContent() {
         </div>
       </div>
 
+      {/* Quick Fill Templates */}
+      {showForm && !editingId && (
+        <div className="mb-5 rounded-2xl overflow-hidden" style={{ background: "#0b1120", border: "1px solid rgba(251,191,36,0.15)" }}>
+          <div className="px-4 pt-3 pb-1 flex items-center gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(251,191,36,0.5)" }}>Quick Fill — click a template</span>
+          </div>
+          <div className="px-3 pb-3 flex flex-wrap gap-2">
+            {SERVICES.map(s => (
+              <button key={s.slug} type="button"
+                onClick={() => setForm({ name: s.name, category: s.category, description: s.description, price: String(s.price), badge: s.badge || "", icon: s.icon, details: s.details.length ? s.details : [""] })}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                style={form.name === s.name
+                  ? { background: "rgba(251,191,36,0.15)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.4)" }
+                  : { background: "rgba(255,255,255,0.04)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Add / Edit form */}
       {showForm && (() => {
         const previewService: Service = {
