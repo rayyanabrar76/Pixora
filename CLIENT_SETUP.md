@@ -49,6 +49,8 @@ create table services (
   badge text,
   slug text unique not null,
   icon text default 'star',
+  details text[] default '{}',
+  deleted_at timestamptz default null,
   created_at timestamptz default now()
 );
 
@@ -109,7 +111,10 @@ Done. The site is fully connected to the client's accounts.
 ## How the admin panel works
 
 - Sign in with an admin Gmail → profile dropdown shows "Admin Panel"
-- Go to /admin to add, edit, or delete services
-- Services added here appear live on the shop for all visitors instantly
+- Go to /admin — sidebar with Dashboard, Services, and Trash pages
+- **Dashboard**: stats overview, order instructions, quick links
+- **Services**: add, edit, delete services. Click "Migrate Static" once on first setup to import all built-in services into the database so they can be managed from the panel
+- **Trash**: deleted services go here first. Restore or permanently delete. Built-in (static) services can only be hidden via Trash — not permanently deleted
+- Services added or edited here appear live on the shop instantly
 - Orders from customers are emailed to the admin Gmail via EmailJS
 - Cancelled orders also trigger an email notification
