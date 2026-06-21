@@ -79,6 +79,7 @@ function ServicesContent() {
   const [toast, setToast] = useState("");
   const [savedSlug, setSavedSlug] = useState<string | null>(null);
   const [originalForm, setOriginalForm] = useState(EMPTY_FORM);
+  const [serviceFilter, setServiceFilter] = useState<"all" | "static" | "mine">("all");
   useEffect(() => {
     if (!savedSlug) return;
     const t = setTimeout(() => setSavedSlug(null), 3500);
@@ -438,6 +439,35 @@ function ServicesContent() {
         </>
       )}
 
+      {/* Filter tabs */}
+      {dbServices.length > 0 && (() => {
+        const staticSlugs = new Set(SERVICES.map(s => s.slug));
+        const counts = {
+          all: dbServices.length,
+          static: dbServices.filter(s => staticSlugs.has(s.slug)).length,
+          mine: dbServices.filter(s => !staticSlugs.has(s.slug)).length,
+        };
+        return (
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            {(["all", "static", "mine"] as const).map(f => (
+              <button key={f} onClick={() => setServiceFilter(f)}
+                className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+                style={serviceFilter === f ? {
+                  background: "rgba(251,191,36,0.12)", color: "#fbbf24", border: "1px solid rgba(251,191,36,0.3)",
+                } : {
+                  background: "rgba(255,255,255,0.04)", color: "rgba(148,163,184,0.6)", border: "1px solid rgba(255,255,255,0.07)",
+                }}>
+                {f === "all" ? "All" : f === "static" ? "Static" : "My Services"}
+                <span className="px-1.5 py-0.5 rounded-full text-[10px]"
+                  style={{ background: serviceFilter === f ? "rgba(251,191,36,0.2)" : "rgba(255,255,255,0.06)" }}>
+                  {counts[f]}
+                </span>
+              </button>
+            ))}
+          </div>
+        );
+      })()}
+
       {/* Services list */}
       {dbServices.length === 0 ? (
         <div className="rounded-2xl p-12 text-center"
@@ -452,9 +482,14 @@ function ServicesContent() {
         <div className="rounded-2xl overflow-hidden"
           style={{ background: "#0b1120", border: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="h-0.75" style={{ background: "linear-gradient(to right,#fbbf24,#f59e0b)" }} />
-          {dbServices.map((s, i) => (
+          {(() => {
+            const staticSlugs = new Set(SERVICES.map(s => s.slug));
+            return serviceFilter === "all" ? dbServices
+              : serviceFilter === "static" ? dbServices.filter(s => staticSlugs.has(s.slug))
+              : dbServices.filter(s => !staticSlugs.has(s.slug));
+          })().map((s, i, arr) => (
             <div key={s.id}
-              style={{ borderBottom: i < dbServices.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
+              style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
               className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-0.5 flex-wrap">
