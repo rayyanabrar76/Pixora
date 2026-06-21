@@ -129,23 +129,11 @@ export default function CheckoutPage() {
         EJ_KEY
       );
 
-      /* Save order to Supabase for admin panel */
-      const { data: dbOrder } = await supabase.from("orders").insert({
-        user_id: user?.id ?? null,
-        user_email: form.email,
-        user_name: `${form.firstName} ${form.lastName}`.trim(),
-        phone: form.phone,
-        items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
-        total: totalPrice,
-        notes: form.notes || null,
-        status: "new",
-      }).select("id").single();
-
-      /* Save order to localStorage for order history */
+      /* EmailJS succeeded — save locally immediately so the user sees their order */
+      const localId = `order_${Date.now()}`;
       if (user) {
         const order: StoredOrder = {
-          id: `order_${Date.now()}`,
-          supabase_id: dbOrder?.id ?? undefined,
+          id: localId,
           items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
           total: totalPrice,
           firstName: form.firstName,
@@ -161,6 +149,29 @@ export default function CheckoutPage() {
 
       setDone(true);
       clearCart();
+
+      /* Save to Supabase in the background — never blocks or breaks checkout */
+      void (async () => {
+        try {
+          const { data } = await supabase.from("orders").insert({
+            user_id: user?.id ?? null,
+            user_email: form.email,
+            user_name: `${form.firstName} ${form.lastName}`.trim(),
+            phone: form.phone,
+            items: items.map(({ id, name, qty, price, category }) => ({ id, name, qty, price, category })),
+            total: totalPrice,
+            notes: form.notes || null,
+            status: "new",
+          }).select("id");
+          const sbId = data?.[0]?.id;
+          if (sbId && user) {
+            const orders = getOrders(user.id);
+            const updated = orders.map(o => o.id === localId ? { ...o, supabase_id: sbId } : o);
+            localStorage.setItem(`pixora_orders_${user.id}`, JSON.stringify(updated));
+          }
+        } catch { /* silently ignore */ }
+      })();
+
     } catch {
       setError("Something went wrong. Please try again or WhatsApp us directly.");
     } finally {
