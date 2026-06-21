@@ -11,13 +11,13 @@ import {
 const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
   .split(",").map(e => e.trim()).filter(Boolean);
 
-const NAV = [
-  { label: "Dashboard", href: "/admin",            icon: LayoutDashboard },
-  { label: "Services",  href: "/admin/services",   icon: Package },
-  { label: "Orders",    href: "/admin/orders",     icon: ShoppingBag },
-  { label: "Customers", href: "/admin/customers",  icon: Users },
-  { label: "Trash",     href: "/admin/trash",      icon: Trash2 },
-  { label: "Settings",  href: "/admin/settings",   icon: Settings },
+const NAV_ALL = [
+  { label: "Dashboard", href: "/admin",           icon: LayoutDashboard },
+  { label: "Services",  href: "/admin/services",  icon: Package },
+  { label: "Orders",    href: "/admin/orders",    icon: ShoppingBag },
+  { label: "Customers", href: "/admin/customers", icon: Users },
+  { label: "Trash",     href: "/admin/trash",     icon: Trash2 },
+  { label: "Settings",  href: "/admin/settings",  icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -25,14 +25,39 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [accessChecked, setAccessChecked] = useState(false);
+  const [allowed, setAllowed] = useState(false);
+  const [isMainAdmin, setIsMainAdmin] = useState(false);
 
   useEffect(() => {
     if (!isLoaded) return;
-    const email = user?.emailAddresses[0]?.emailAddress ?? "";
-    if (!user || !ADMIN_EMAILS.includes(email)) router.replace("/");
-  }, [isLoaded, user, router]);
+    if (!user) { router.replace("/"); return; }
+    const email = user.emailAddresses[0]?.emailAddress ?? "";
 
-  if (!isLoaded) {
+    if (ADMIN_EMAILS.includes(email)) {
+      setIsMainAdmin(true);
+      setAllowed(true);
+      setAccessChecked(true);
+      return;
+    }
+
+    // Check sub-admins table
+    fetch("/api/admin/sub-admins/check", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) })
+      .then(r => r.json())
+      .then(d => {
+        if (d.allowed) {
+          // Sub-admins cannot access settings
+          if (pathname === "/admin/settings") { router.replace("/admin"); return; }
+          setAllowed(true);
+        } else {
+          router.replace("/");
+        }
+        setAccessChecked(true);
+      })
+      .catch(() => { router.replace("/"); setAccessChecked(true); });
+  }, [isLoaded, user, router, pathname]);
+
+  if (!isLoaded || !accessChecked) {
     return (
       <div className="flex items-center justify-center" style={{ minHeight: "100vh", background: "#060d1f" }}>
         <div className="w-8 h-8 rounded-full border-2 animate-spin"
@@ -41,8 +66,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
+  if (!allowed) return null;
+
   const email = user?.emailAddresses[0]?.emailAddress ?? "";
-  if (!ADMIN_EMAILS.includes(email)) return null;
+  const NAV = isMainAdmin ? NAV_ALL : NAV_ALL.filter(n => n.href !== "/admin/settings");
 
   return (
     <div className="flex" style={{ minHeight: "100vh", background: "#060d1f" }}>
@@ -66,7 +93,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.25)" }}>
               <ShieldCheck size={13} style={{ color: "#fbbf24" }} />
             </div>
-            <span className="text-sm font-extrabold" style={{ color: "#fde68a" }}>Admin Panel</span>
+            <div>
+              <span className="text-sm font-extrabold" style={{ color: "#fde68a" }}>Admin Panel</span>
+              {!isMainAdmin && (
+                <p className="text-[9px] leading-none mt-0.5" style={{ color: "rgba(251,191,36,0.4)" }}>Sub-admin</p>
+              )}
+            </div>
           </div>
           <button className="lg:hidden" onClick={() => setOpen(false)}
             style={{ color: "rgba(100,116,139,0.6)" }}>
@@ -96,8 +128,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
-        {/* Footer nav */}
+        {/* Footer — email + back */}
         <div className="p-2.5" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <p className="text-[10px] truncate px-3 mb-2" style={{ color: "rgba(100,116,139,0.4)" }}>{email}</p>
           <Link href="/"
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all"
             style={{ color: "rgba(100,116,139,0.55)", border: "1px solid transparent" }}
