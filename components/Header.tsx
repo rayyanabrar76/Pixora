@@ -11,7 +11,8 @@ import {
   ShoppingBag, Share2, Camera, MapPin, FileText, TrendingUp,
   Settings, Monitor, MessageCircle, Users, type LucideIcon,
 } from "lucide-react";
-import { SERVICES } from "@/lib/services";
+import { SERVICES, type Service } from "@/lib/services";
+import { supabase, type DbService } from "@/lib/supabase";
 import Logo from "@/components/Logo";
 import ServiceBanner from "@/components/ServiceBanner";
 import { Show, useUser, useClerk } from "@clerk/nextjs";
@@ -36,8 +37,29 @@ export default function Header() {
   const inputRef  = useRef<HTMLInputElement>(null);
   const searchRef = useRef<HTMLDivElement>(null);
 
+  const [dbServices, setDbServices] = useState<Service[]>([]);
+
+  useEffect(() => {
+    supabase.from("services").select("*").is("deleted_at", null)
+      .then(({ data }) => {
+        if (data) {
+          const mapped = (data as DbService[]).map(s => ({
+            id: `db_${s.id}`, slug: s.slug, name: s.name, category: s.category,
+            price: s.price, priceLabel: s.price_label, description: s.description,
+            details: s.details ?? [], badge: s.badge ?? undefined, icon: s.icon,
+          }));
+          setDbServices(mapped);
+        }
+      });
+  }, []);
+
+  const allServices = [
+    ...SERVICES.filter(s => !dbServices.find(d => d.slug === s.slug)),
+    ...dbServices,
+  ];
+
   const results = query.trim().length > 0
-    ? SERVICES.filter((s) =>
+    ? allServices.filter((s) =>
         s.name.toLowerCase().includes(query.toLowerCase()) ||
         s.category.toLowerCase().includes(query.toLowerCase()) ||
         s.description.toLowerCase().includes(query.toLowerCase())

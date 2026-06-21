@@ -65,6 +65,7 @@ export default function AdminServicesPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
   const [seeding, setSeeding] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -86,7 +87,13 @@ export default function AdminServicesPage() {
     str.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   const handleSave = async () => {
-    if (!form.name || !form.category || !form.description || !form.price) return;
+    const e = {
+      name: !form.name,
+      description: !form.description,
+      price: !form.price,
+    };
+    setErrors(e);
+    if (e.name || e.description || e.price) return;
     setSaving(true);
     const payload = {
       name: form.name,
@@ -110,6 +117,7 @@ export default function AdminServicesPage() {
     setShowForm(false);
     setForm(EMPTY_FORM);
     setEditingId(null);
+    setErrors({});
     loadServices();
   };
 
@@ -199,9 +207,9 @@ export default function AdminServicesPage() {
           <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <div>
-              <label className="block text-xs font-semibold mb-1.5" style={{ color: "rgba(148,163,184,0.7)" }}>Service Name *</label>
-              <input style={FIELD} placeholder="e.g. Logo Design" value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: errors.name ? "#f87171" : "rgba(148,163,184,0.7)" }}>Service Name *{errors.name && " — required"}</label>
+              <input style={{ ...FIELD, borderColor: errors.name ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.1)" }} placeholder="e.g. Logo Design" value={form.name}
+                onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(er => ({ ...er, name: false })); }} />
             </div>
 
             <div>
@@ -211,17 +219,17 @@ export default function AdminServicesPage() {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold mb-1.5" style={{ color: "rgba(148,163,184,0.7)" }}>Description *</label>
-              <textarea style={{ ...FIELD, resize: "vertical", minHeight: 80, fontFamily: "inherit" }}
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: errors.description ? "#f87171" : "rgba(148,163,184,0.7)" }}>Description *{errors.description && " — required"}</label>
+              <textarea style={{ ...FIELD, resize: "vertical", minHeight: 80, fontFamily: "inherit", borderColor: errors.description ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.1)" }}
                 placeholder="Short description shown on the card"
                 value={form.description}
-                onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+                onChange={e => { setForm(f => ({ ...f, description: e.target.value })); setErrors(er => ({ ...er, description: false })); }} />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold mb-1.5" style={{ color: "rgba(148,163,184,0.7)" }}>Price (Rs.) *</label>
-              <input style={FIELD} type="number" placeholder="e.g. 5000" value={form.price}
-                onChange={e => setForm(f => ({ ...f, price: e.target.value }))} />
+              <label className="block text-xs font-semibold mb-1.5" style={{ color: errors.price ? "#f87171" : "rgba(148,163,184,0.7)" }}>Price (Rs.) *{errors.price && " — required"}</label>
+              <input style={{ ...FIELD, borderColor: errors.price ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.1)" }} type="number" placeholder="e.g. 5000" value={form.price}
+                onChange={e => { setForm(f => ({ ...f, price: e.target.value })); setErrors(er => ({ ...er, price: false })); }} />
             </div>
 
             <div>
