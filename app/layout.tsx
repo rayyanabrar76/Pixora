@@ -19,16 +19,16 @@ export const metadata: Metadata = {
   description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more. Based in Pakistan.",
   metadataBase: new URL("https://fahadaminaenterprises.com"),
   openGraph: {
-    title: "Fahadamina Enterprises - Digital Services",
+    title: "FAHADAMINAENTERPRISES - Digital Services",
     description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more.",
     url: "https://fahadaminaenterprises.com",
-    siteName: "Fahadamina Enterprises",
+    siteName: "FAHADAMINAENTERPRISES",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fahadamina Enterprises - Digital Services",
+    title: "FAHADAMINAENTERPRISES - Digital Services",
     description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more.",
   },
 };
