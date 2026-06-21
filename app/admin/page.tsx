@@ -10,8 +10,8 @@ import {
   ArrowRight, AlertTriangle, BarChart2, Settings, Layers,
 } from "lucide-react";
 
-const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "fahadwaseem461@gmail.com")
-  .split(",").map(e => e.trim());
+const ADMIN_EMAILS = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
+  .split(",").map(e => e.trim()).filter(Boolean);
 
 export default function AdminPage() {
   const { user, isLoaded } = useUser();

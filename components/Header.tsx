@@ -613,7 +613,7 @@ function UserMenu() {
   const initials = ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase() || user.emailAddresses[0]?.emailAddress?.[0]?.toUpperCase() || "U";
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
   const email = user.emailAddresses[0]?.emailAddress ?? "";
-  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "fahadwaseem461@gmail.com").split(",").map(e => e.trim());
+  const adminEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
   const isAdmin = adminEmails.includes(email);
 
   const handleToggle = () => {
