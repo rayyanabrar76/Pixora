@@ -40,7 +40,7 @@ export default function AboutPage() {
           <span className="inline-flex items-center gap-2 text-[11px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest mb-5"
             style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)", color: "#60a5fa" }}>
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            About Fahadamina Enterprises
+            FAHADAMINAENTERPRISES
           </span>
           <h1 className="text-5xl font-extrabold mb-5 leading-tight"
             style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
@@ -169,7 +169,7 @@ export default function AboutPage() {
             </span>
             <h2 className="text-3xl font-extrabold"
               style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
-              People Behind Fahadamina Enterprises
+              People Behind FAHADAMINAENTERPRISES
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
