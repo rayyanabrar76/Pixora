@@ -180,7 +180,7 @@ export default function Header() {
         <div className="max-w-6xl mx-auto px-4 flex items-center justify-between h-18 gap-4" style={{ height: "72px" }}>
 
           {/* Logo */}
-          <Logo dark />
+          <Logo />
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
@@ -524,7 +524,7 @@ export default function Header() {
             {/* Header row */}
             <div className="flex items-center justify-between px-5 py-4 shrink-0"
               style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <Logo dark />
+              <Logo />
               <button onClick={() => setMenuOpen(false)}
                 className="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
                 style={{ background: "rgba(255,255,255,0.06)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.08)" }}
