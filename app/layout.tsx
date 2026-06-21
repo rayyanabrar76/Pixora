@@ -4,11 +4,11 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { CartProvider } from "@/context/CartContext";
 import SiteChrome from "@/components/SiteChrome";
 import TopProgress from "@/components/TopProgress";
-import { Exo_2 } from "next/font/google";
+import { Comfortaa } from "next/font/google";
 
-const exo2 = Exo_2({
+const comfortaa = Comfortaa({
   subsets: ["latin"],
-  weight: ["800", "900"],
+  weight: ["700"],
   variable: "--font-brand",
   display: "swap",
 });
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClerkProvider>
-      <html lang="en" className={exo2.variable}>
+      <html lang="en" className={comfortaa.variable}>
         <body className="min-h-screen flex flex-col">
           <CartProvider>
             <TopProgress />
