@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Users, Zap, Shield, Star, Target, Globe } from "lucide-react";
+import { ArrowRight, CheckCircle2, Zap, Shield, Target, Globe } from "lucide-react";
 import { PMark } from "@/components/Logo";
 
 const STATS = [
@@ -37,13 +37,13 @@ export default function AboutPage() {
           style={{ background: "linear-gradient(to right,transparent,rgba(37,99,235,0.4),transparent)" }} />
 
         <div className="max-w-3xl mx-auto text-center relative">
-          <span className="inline-flex items-center gap-2 text-[11px] font-bold px-3.5 py-1.5 rounded-full uppercase tracking-widest mb-5"
-            style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)", color: "#60a5fa" }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          <span className="inline-flex items-center gap-2 text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest mb-5 max-w-full"
+            style={{ background: "rgba(37,99,235,0.12)", border: "1px solid rgba(37,99,235,0.25)", color: "#60a5fa", fontSize: "clamp(8px, 2.2vw, 11px)", letterSpacing: "0.1em" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 shrink-0" />
             FAHADAMINAENTERPRISES
           </span>
-          <h1 className="text-5xl font-extrabold mb-5 leading-tight"
-            style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+          <h1 className="font-extrabold mb-5 leading-tight"
+            style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontSize: "clamp(2rem, 8vw, 3.5rem)" }}>
             We Build Brands<br />That Get Remembered
           </h1>
           <p className="text-lg leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>

@@ -27,13 +27,13 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
           {/* Logo + tagline */}
           <div className="flex-1">
-            <div className="flex items-center gap-4 mb-5">
-              <PMark size={64} />
+            <div className="flex items-center gap-3 mb-5">
+              <PMark size={48} />
               <span style={{
                 fontFamily: "var(--font-brand, sans-serif)",
                 fontWeight: 900,
                 color: "#0097B2",
-                fontSize: "2rem",
+                fontSize: "clamp(1rem, 4.5vw, 2rem)",
                 letterSpacing: "0.01em",
                 lineHeight: 1,
               }}>
