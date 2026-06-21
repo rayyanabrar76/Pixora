@@ -259,7 +259,6 @@ export default function AuthModal({ onClose }: Props) {
                   By signing up you agree to our{" "}
                   <a href="#" className="transition-colors" style={{ color: "#60a5fa" }}>privacy policy</a>.
                 </p>
-                <div id="clerk-captcha" />
                 {regError && <p className="text-red-400 text-sm">{regError}</p>}
                 <button type="submit" disabled={regLoading}
                   className="w-full flex items-center justify-center gap-2 font-bold py-3 rounded-xl text-sm text-white transition-all hover:scale-[1.02] disabled:opacity-50 mt-2"
@@ -270,6 +269,9 @@ export default function AuthModal({ onClose }: Props) {
             )}
           </div>
         )}
+
+        {/* Always-mounted captcha anchor for Clerk */}
+        <div id="clerk-captcha" style={{ display: "none" }} />
 
         {/* Bottom accent */}
         <div className="h-px w-full" style={{ background: "linear-gradient(to right,transparent,rgba(79,70,229,0.3),transparent)" }} />
