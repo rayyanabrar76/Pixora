@@ -33,9 +33,36 @@ export const metadata: Metadata = {
   },
 };
 
+const clerkAppearance = {
+  layout: {
+    logoImageUrl: "/logo_transparent.png",
+    logoLinkUrl: "/",
+  },
+  variables: {
+    colorPrimary: "#0097B2",
+    colorBackground: "#0b1120",
+    colorInputBackground: "#0d1830",
+    colorInputText: "#e2e8f0",
+    colorText: "#e2e8f0",
+    colorTextSecondary: "rgba(148,163,184,0.7)",
+    colorDanger: "#f87171",
+    borderRadius: "12px",
+    fontFamily: "inherit",
+  },
+  elements: {
+    card: { boxShadow: "0 24px 80px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.08)" },
+    headerTitle: { color: "#ffffff" },
+    headerSubtitle: { color: "rgba(148,163,184,0.7)" },
+    socialButtonsBlockButton: { border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" },
+    formFieldInput: { border: "1px solid rgba(255,255,255,0.1)" },
+    footerActionLink: { color: "#0097B2" },
+    identityPreviewText: { color: "#e2e8f0" },
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider appearance={clerkAppearance}>
       <html lang="en" className={comfortaa.variable}>
         <body className="min-h-screen flex flex-col">
           <CartProvider>
