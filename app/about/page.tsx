@@ -167,8 +167,8 @@ export default function AboutPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
               The Team
             </span>
-            <h2 className="text-3xl font-extrabold"
-              style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            <h2 className="font-extrabold"
+              style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", fontSize: "clamp(1.3rem, 5vw, 2rem)" }}>
               People Behind FAHADAMINAENTERPRISES
             </h2>
           </div>
