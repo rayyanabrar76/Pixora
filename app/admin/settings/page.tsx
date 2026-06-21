@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader2, Trash2, ShoppingBag, Users, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, ShoppingBag, Users, CheckCircle2, AlertTriangle } from "lucide-react";
 
 type Action = {
   key: string;
@@ -51,28 +51,6 @@ export default function AdminSettingsPage() {
       run: async () => {
         await fetch("/api/admin/clear-customers", { method: "DELETE" });
         await supabase.from("orders").delete().gte("created_at", "1970-01-01T00:00:00.000Z");
-      },
-    },
-    {
-      key: "clear_guest_orders",
-      title: "Clear Guest Orders",
-      description: "Delete all orders placed by guests (no account). Registered customers keep their order history.",
-      icon: Users,
-      color: "#fbbf24",
-      confirm: "Delete all guest orders permanently?",
-      run: async () => {
-        await supabase.from("orders").delete().is("user_id", null);
-      },
-    },
-    {
-      key: "clear_cancelled",
-      title: "Clear Cancelled Orders",
-      description: "Remove all cancelled orders from the database to keep the orders list clean.",
-      icon: Trash2,
-      color: "#f87171",
-      confirm: "Delete all cancelled orders permanently?",
-      run: async () => {
-        await supabase.from("orders").delete().eq("status", "cancelled");
       },
     },
   ];
