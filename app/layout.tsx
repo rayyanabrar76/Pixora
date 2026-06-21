@@ -37,6 +37,7 @@ const clerkAppearance = {
   layout: {
     logoImageUrl: "/logo_transparent.png",
     logoLinkUrl: "/",
+    showOptionalFields: true,
   },
   variables: {
     colorPrimary: "#0097B2",
@@ -51,8 +52,9 @@ const clerkAppearance = {
   },
   elements: {
     card: { boxShadow: "0 24px 80px rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.08)" },
-    headerTitle: { color: "#ffffff" },
-    headerSubtitle: { color: "rgba(148,163,184,0.7)" },
+    headerTitle: { display: "none" },
+    headerSubtitle: { display: "none" },
+    logoBox: { display: "none" },
     socialButtonsBlockButton: { border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)" },
     formFieldInput: { border: "1px solid rgba(255,255,255,0.1)" },
     footerActionLink: { color: "#0097B2" },
