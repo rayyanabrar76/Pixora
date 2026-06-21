@@ -53,8 +53,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full z-50 flex flex-col transition-transform duration-300 lg:static lg:translate-x-0 lg:z-auto lg:h-auto lg:min-h-full ${open ? "translate-x-0" : "-translate-x-full"}`}
-        style={{ width: 220, background: "#080f22", borderRight: "1px solid rgba(255,255,255,0.06)", minHeight: "100%" }}>
+        className={`fixed top-0 left-0 h-full z-50 flex flex-col transition-transform duration-300 lg:sticky lg:top-0 lg:translate-x-0 lg:z-auto lg:h-screen lg:overflow-y-auto ${open ? "translate-x-0" : "-translate-x-full"}`}
+        style={{ width: 220, background: "#080f22", borderRight: "1px solid rgba(255,255,255,0.06)", flexShrink: 0 }}>
 
         {/* Brand */}
         <div className="flex items-center justify-between px-4 py-4"
