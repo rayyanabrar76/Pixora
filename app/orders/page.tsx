@@ -19,9 +19,9 @@ export default function OrdersPage() {
     }
   }, [isLoaded, user]);
 
-  const EJ_SVC = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  || "service_1mmyrpk";
-  const EJ_TPL = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID  || "template_0uow21s";
-  const EJ_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY   || "BUS00ZVP7fVGfsSdb";
+  const EJ_SVC = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+  const EJ_TPL = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
+  const EJ_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
 
   const handleCancel = async (order: StoredOrder) => {
     if (!user) return;

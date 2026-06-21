@@ -99,9 +99,9 @@ export default function CheckoutPage() {
     boxShadow: focused === name ? "0 0 0 3px rgba(37,99,235,0.12)" : "none",
   });
 
-  const EJ_SVC  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID  || "service_1mmyrpk";
-  const EJ_TPL  = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID  || "template_0uow21s";
-  const EJ_KEY  = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY   || "BUS00ZVP7fVGfsSdb";
+  const EJ_SVC  = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
+  const EJ_TPL  = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
+  const EJ_KEY  = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
