@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader2, ShoppingBag, Users, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Loader2, Trash2, ShoppingBag, Users, CheckCircle2, AlertTriangle } from "lucide-react";
 
 type Action = {
   key: string;
