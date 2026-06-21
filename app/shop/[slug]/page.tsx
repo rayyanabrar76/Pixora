@@ -93,9 +93,9 @@ export default function ServiceDetail() {
       {/* Admin floating edit button */}
       {isAdmin && (
         <Link href={`/admin/services?edit=${slug}`}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shadow-2xl transition-all hover:scale-105"
-          style={{ background: "linear-gradient(135deg,#d97706,#b45309)", color: "#fff", boxShadow: "0 4px 20px rgba(180,83,9,0.4)" }}>
-          <Pencil size={14} />
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-80"
+          style={{ background: "rgba(180,83,9,0.85)", color: "#fde68a" }}>
+          <Pencil size={12} />
           Edit Service
         </Link>
       )}
