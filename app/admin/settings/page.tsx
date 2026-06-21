@@ -66,10 +66,10 @@ export default function AdminSettingsPage() {
       <div className="rounded-2xl overflow-hidden mb-6"
         style={{ background: "#0b1120", border: "1px solid rgba(239,68,68,0.2)" }}>
         <div className="h-0.75" style={{ background: "linear-gradient(to right,#ef4444,#b91c1c)" }} />
-        <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(239,68,68,0.1)" }}>
-          <AlertTriangle size={14} style={{ color: "#f87171" }} />
+        <div className="px-5 py-4 flex items-start gap-2 flex-wrap" style={{ borderBottom: "1px solid rgba(239,68,68,0.1)" }}>
+          <AlertTriangle size={14} style={{ color: "#f87171", flexShrink: 0, marginTop: 2 }} />
           <span className="text-sm font-bold" style={{ color: "#f87171" }}>Danger Zone</span>
-          <span className="text-xs ml-1" style={{ color: "rgba(100,116,139,0.5)" }}>— these actions are permanent and cannot be undone</span>
+          <span className="text-xs" style={{ color: "rgba(100,116,139,0.5)" }}>— permanent, cannot be undone</span>
         </div>
 
         {ACTIONS.map((action, i) => {
@@ -80,13 +80,13 @@ export default function AdminSettingsPage() {
 
           return (
             <div key={action.key}
-              className="flex items-start justify-between gap-4 px-5 py-5 flex-wrap gap-y-3"
+              className="flex flex-col gap-4 px-5 py-5"
               style={{ borderBottom: i < ACTIONS.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}>
 
               {/* Info */}
-              <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className="flex items-start gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5"
-                  style={{ background: `rgba(${action.color === "#f87171" ? "239,68,68" : "251,191,36"},0.1)`, border: `1px solid rgba(${action.color === "#f87171" ? "239,68,68" : "251,191,36"},0.2)` }}>
+                  style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)" }}>
                   <Icon size={14} style={{ color: action.color }} />
                 </div>
                 <div>
@@ -96,28 +96,30 @@ export default function AdminSettingsPage() {
               </div>
 
               {/* Action */}
-              <div className="flex items-center gap-2 flex-wrap shrink-0">
+              <div className="flex flex-col gap-2">
                 {isDone ? (
                   <div className="flex items-center gap-1.5 text-xs font-semibold" style={{ color: "#4ade80" }}>
                     <CheckCircle2 size={13} /> Done
                   </div>
                 ) : isConfirming ? (
                   <>
-                    <span className="text-xs font-semibold" style={{ color: "#f87171" }}>{action.confirm}</span>
-                    <button onClick={() => runAction(action.key, action.run)} disabled={isLoading}
-                      className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg disabled:opacity-60"
-                      style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
-                      {isLoading ? <><Loader2 size={11} className="animate-spin" /> Deleting…</> : "Yes, delete"}
-                    </button>
-                    <button onClick={() => setConfirming(null)}
-                      className="text-xs font-bold px-3 py-1.5 rounded-lg"
-                      style={{ background: "rgba(255,255,255,0.05)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}>
-                      Cancel
-                    </button>
+                    <p className="text-xs font-semibold" style={{ color: "#f87171" }}>{action.confirm}</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => runAction(action.key, action.run)} disabled={isLoading}
+                        className="flex-1 flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg disabled:opacity-60"
+                        style={{ background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.3)" }}>
+                        {isLoading ? <><Loader2 size={11} className="animate-spin" /> Deleting…</> : "Yes, delete"}
+                      </button>
+                      <button onClick={() => setConfirming(null)}
+                        className="flex-1 text-xs font-bold px-3 py-2 rounded-lg"
+                        style={{ background: "rgba(255,255,255,0.05)", color: "rgba(148,163,184,0.7)", border: "1px solid rgba(255,255,255,0.1)" }}>
+                        Cancel
+                      </button>
+                    </div>
                   </>
                 ) : (
                   <button onClick={() => setConfirming(action.key)}
-                    className="flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg transition-all"
+                    className="w-full flex items-center justify-center gap-1.5 text-xs font-bold px-3 py-2.5 rounded-lg transition-all"
                     style={{ background: "rgba(239,68,68,0.08)", color: "#f87171", border: "1px solid rgba(239,68,68,0.2)" }}
                     onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"}
                     onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"}>
