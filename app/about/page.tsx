@@ -17,7 +17,7 @@ const VALUES = [
 ];
 
 const TEAM = [
-  { name: "The Founder",    role: "Founder & Creative Director", initials: "PX", color: "#2563eb" },
+  { name: "The Founder",    role: "Founder & Creative Director", initials: "FE", color: "#0097B2" },
   { name: "Design Team",    role: "Brand & Visual Design",        initials: "DT", color: "#7c3aed" },
   { name: "Dev Team",       role: "Web & App Development",        initials: "DV", color: "#0891b2" },
   { name: "Marketing Team", role: "SEO & Social Media",           initials: "MT", color: "#059669" },
@@ -79,7 +79,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <div className="mb-4 flex items-center justify-center"
-                  style={{ filter: "drop-shadow(0 0 40px rgba(37,99,235,0.5))" }}>
+                  style={{ filter: "drop-shadow(0 0 40px rgba(0,151,178,0.6))" }}>
                   <PMark size={96} />
                 </div>
                 <p className="font-extrabold text-xl" style={{ color: "#e2e8f0" }}>Fahadamina Enterprises</p>
