@@ -30,9 +30,21 @@ export default function AdminSettingsPage() {
 
   const ACTIONS: Action[] = [
     {
+      key: "clear_customers",
+      title: "Clear Customer History",
+      description: "Delete all non-admin Clerk accounts AND all orders from the database. The Customers page and Orders page will show 0. Admin accounts are kept.",
+      icon: Users,
+      color: "#f87171",
+      confirm: "Delete all customer accounts and orders permanently?",
+      run: async () => {
+        await fetch("/api/admin/clear-customers", { method: "DELETE" });
+        await supabase.from("orders").delete().gte("created_at", "1970-01-01T00:00:00.000Z");
+      },
+    },
+    {
       key: "clear_all_orders",
       title: "Clear All Orders",
-      description: "Permanently delete every order from the database. Customers' My Orders pages will be empty. This cannot be undone.",
+      description: "Permanently delete every order from the database. Customer accounts stay in Clerk. Orders page will show 0.",
       icon: ShoppingBag,
       color: "#f87171",
       confirm: "Delete every order from Supabase permanently?",
