@@ -65,10 +65,13 @@ export default function CheckoutPage() {
   const { items, totalPrice, clearCart } = useCart();
   const { user, isLoaded } = useUser();
 
+  const [mounted, setMounted] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [focused, setFocused] = useState("");
+
+  useEffect(() => { setMounted(true); }, []);
 
   const [form, setForm] = useState({
     firstName: "",
@@ -329,8 +332,8 @@ export default function CheckoutPage() {
     );
   }
 
-  /* ── Empty cart guard ── */
-  if (items.length === 0) {
+  /* ── Empty cart guard (mounted guard prevents SSR/client mismatch) ── */
+  if (!mounted || items.length === 0) {
     return (
       <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}
         className="flex items-center justify-center px-4">
