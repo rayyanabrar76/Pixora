@@ -14,6 +14,7 @@ const exo2 = Exo_2({
 });
 
 export const metadata: Metadata = {
+  icons: { icon: "/logo_transparent.ico" },
   title: "Fahadamina Enterprises - Digital Services",
   description: "Professional digital services for growing businesses — web development, logo design, SEO, social media & more. Based in Pakistan.",
   metadataBase: new URL("https://fahadaminaenterprises.com"),
