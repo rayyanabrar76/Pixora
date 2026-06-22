@@ -584,31 +584,51 @@ export default function Header() {
 function MobileUserRow({ onClose }: { onClose: () => void }) {
   const { user } = useUser();
   const { signOut } = useClerk();
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   if (!user) return null;
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
   const email = user.emailAddresses[0]?.emailAddress ?? "";
   return (
-    <div className="flex items-center gap-3">
-      <div className="w-9 h-9 rounded-full overflow-hidden shrink-0"
-        style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)" }}>
-        {user.imageUrl
-          ? <img src={user.imageUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          : <span className="w-full h-full flex items-center justify-center text-white text-xs font-extrabold">{name[0]}</span>
-        }
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full overflow-hidden shrink-0"
+          style={{ background: "linear-gradient(135deg,#1e3a8a,#4f46e5)", border: "2px solid rgba(96,165,250,0.4)" }}>
+          {user.imageUrl
+            ? <img src={user.imageUrl} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            : <span className="w-full h-full flex items-center justify-center text-white text-xs font-extrabold">{name[0]}</span>
+          }
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-bold truncate" style={{ color: "#e2e8f0" }}>{name}</p>
+          <p className="text-[11px] truncate" style={{ color: "rgba(100,116,139,0.7)" }}>{email}</p>
+        </div>
+        {!confirmSignOut && (
+          <button onClick={() => setConfirmSignOut(true)}
+            className="w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0"
+            style={{ color: "rgba(248,113,113,0.7)", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.7)"; }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        )}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-bold truncate" style={{ color: "#e2e8f0" }}>{name}</p>
-        <p className="text-[11px] truncate" style={{ color: "rgba(100,116,139,0.7)" }}>{email}</p>
-      </div>
-      <button onClick={() => { signOut(); onClose(); }}
-        className="w-8 h-8 rounded-lg flex items-center justify-center transition-all shrink-0"
-        style={{ color: "rgba(248,113,113,0.7)", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.18)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "rgba(248,113,113,0.7)"; }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-      </button>
+      {confirmSignOut && (
+        <div className="flex items-center gap-2">
+          <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
+          <button onClick={() => { signOut(); onClose(); }}
+            className="px-3 py-1 rounded-lg text-xs font-bold"
+            style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
+            Yes
+          </button>
+          <button onClick={() => setConfirmSignOut(false)}
+            className="px-3 py-1 rounded-lg text-xs font-bold"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   );
 }
@@ -620,6 +640,7 @@ function UserMenu() {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [isSubAdmin, setIsSubAdmin] = useState(false);
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -761,16 +782,34 @@ function UserMenu() {
                 </svg>
                 My Orders
               </a>
-              <button onClick={() => { signOut(); setOpen(false); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
-                style={{ color: "rgba(203,213,225,0.8)" }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f87171", flexShrink: 0 }}>
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
-                </svg>
-                Sign Out
-              </button>
+              {confirmSignOut ? (
+                <div className="flex items-center gap-2 px-4 py-2.5">
+                  <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
+                  <button
+                    onClick={() => { signOut(); setOpen(false); setConfirmSignOut(false); }}
+                    className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
+                    style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
+                    Yes, sign out
+                  </button>
+                  <button
+                    onClick={() => setConfirmSignOut(false)}
+                    className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
+                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => setConfirmSignOut(true)}
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors text-left"
+                  style={{ color: "rgba(203,213,225,0.8)" }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; (e.currentTarget as HTMLElement).style.color = "#fca5a5"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = "rgba(203,213,225,0.8)"; }}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "#f87171", flexShrink: 0 }}>
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Sign Out
+                </button>
+              )}
             </div>
 
             {/* Footer */}
