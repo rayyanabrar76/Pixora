@@ -11,7 +11,7 @@ const FAQS = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "We accept all major debit and credit cards (Visa, Mastercard) processed securely through Stripe. For clients in Pakistan, we also accept bank transfer and EasyPaisa / JazzCash — please contact us before ordering to arrange this.",
+    a: "We accept bank transfer and mobile wallets (EasyPaisa / JazzCash). Please contact us before or after placing your order to arrange payment. We will confirm your order once payment is received.",
   },
   {
     q: "How long does each service take?",
@@ -51,7 +51,7 @@ const FAQS = [
   },
   {
     q: "Is my payment information secure?",
-    a: "Yes. All payments are processed by Stripe, which is PCI-DSS Level 1 compliant — the highest level of payment security certification available. Fahadamina Enterprises never sees or stores your card number.",
+    a: "Yes. Payments are made via bank transfer or EasyPaisa / JazzCash. We never collect or store your card details. All communication about payment is done directly between you and us, so your financial information stays private.",
   },
 ];
 

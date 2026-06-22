@@ -29,7 +29,7 @@ const STEPS = [
   {
     num: "03",
     title: "Refund Issued",
-    desc: "If the issue cannot be resolved, we will issue a full or partial refund to your original payment method within 3–5 business days.",
+    desc: "If the issue cannot be resolved, we will issue a full or partial refund via bank transfer or mobile wallet within 3–5 business days.",
   },
 ];
 
@@ -175,7 +175,7 @@ export default function RefundPage() {
               </div>
               <div className="mt-6 pt-5" style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}>
                 <p className="text-sm leading-relaxed mb-4" style={{ color: "rgba(148,163,184,0.75)" }}>
-                  Refunds are processed back to your original payment method within <span style={{ color: "#e2e8f0", fontWeight: 700 }}>3–5 business days</span> after approval. Processing times may vary depending on your bank or card issuer.
+                  Refunds are processed via bank transfer or mobile wallet within <span style={{ color: "#e2e8f0", fontWeight: 700 }}>3–5 business days</span> after approval.
                 </p>
                 <Link href="/contact"
                   className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded-xl text-white text-sm transition-all hover:scale-[1.03]"

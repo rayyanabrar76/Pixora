@@ -8,7 +8,7 @@ const SECTIONS = [
     content: [
       {
         heading: "Personal Information",
-        body: "When you place an order or create an account, we collect your full name, email address, and billing information such as card details processed securely through Stripe. We do not store raw card numbers on our servers.",
+        body: "When you place an order or create an account, we collect your full name and email address. Payment is handled manually via bank transfer or mobile wallets (EasyPaisa / JazzCash). We do not collect or store card numbers.",
       },
       {
         heading: "Usage Data",
@@ -30,7 +30,7 @@ const SECTIONS = [
       },
       {
         heading: "Payment Processing",
-        body: "Billing information is passed directly to Stripe, our payment processor. Fahadamina Enterprises never sees or stores your full card number. Stripe is PCI-DSS compliant.",
+        body: "Payments are processed manually via bank transfer or mobile wallet (EasyPaisa / JazzCash). We do not collect card numbers. Payment details shared during the order process are used solely to confirm your transaction.",
       },
       {
         heading: "Marketing Communications",
@@ -69,8 +69,8 @@ const SECTIONS = [
         body: "We use Clerk to manage user accounts, sign-in, and session security. Clerk stores your email and authentication credentials in compliance with industry security standards.",
       },
       {
-        heading: "Stripe (Payments)",
-        body: "All payment transactions are handled by Stripe. Your card data goes directly to Stripe's secure servers and is never transmitted to or stored by Fahadamina Enterprises.",
+        heading: "Supabase (Database)",
+        body: "We use Supabase to store order data and account information securely. Data is stored on Supabase's servers in compliance with industry security standards.",
       },
       {
         heading: "Google Drive",

@@ -39,7 +39,7 @@ export default function ReturnsPage() {
             Return Policy
           </h1>
           <p className="text-base leading-relaxed max-w-xl mx-auto" style={{ color: "rgba(148,163,184,0.75)" }}>
-            All services provided by Pixora are 100% digital. Here is what that means for you.
+            All services provided by FAHADAMINAENTERPRISES are 100% digital. Here is what that means for you.
           </p>
           <p className="text-xs mt-4" style={{ color: "rgba(100,116,139,0.6)" }}>
             Last updated: June 2026
@@ -63,7 +63,7 @@ export default function ReturnsPage() {
             </div>
             <div className="px-6 py-5 space-y-4">
               <p className="text-sm leading-relaxed" style={{ color: "rgba(148,163,184,0.75)" }}>
-                Pixora provides exclusively digital services — including logo design, website development, social media content, video editing, and SEO. Because our deliverables are custom-created digital files and intangible service outputs, they cannot be physically returned the way a retail product can.
+                FAHADAMINAENTERPRISES provides exclusively digital services — including logo design, website development, social media content, video editing, and SEO. Because our deliverables are custom-created digital files and intangible service outputs, they cannot be physically returned the way a retail product can.
               </p>
               <p className="text-sm leading-relaxed" style={{ color: "rgba(148,163,184,0.75)" }}>
                 Once a file is delivered, it exists on your device or in a shared folder — there is no mechanism to reverse a digital delivery. This is a common characteristic of all custom digital work across the industry.
