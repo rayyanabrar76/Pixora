@@ -1,120 +1,69 @@
 # Client Setup Guide
 
-When handing this project to a client, they need to create 4 accounts and send you the keys.
-Replace the placeholders in .env.local, then redeploy to Vercel.
+Everything stays in your accounts. You just give the client access where needed.
 
 ---
 
-## STEP 1 — Clerk (User Login System)
+## STEP 1 — EmailJS (Order Emails)
 
-Tell the client to:
-1. Go to clerk.com and create a free account
-2. Click "Create Application" → name it anything (e.g. Pixora)
-3. Enable "Google" as a sign in option
-4. Go to "API Keys" from the left sidebar
-5. Copy the "Publishable Key" and "Secret Key"
+Client needs their own EmailJS because order emails come from their Gmail.
 
----
+1. Go to emailjs.com → sign up with client's Gmail
+2. Click **Email Services → Add New Service** → connect their Gmail
+3. Copy the **Service ID** (looks like `service_xxxxxxx`)
+4. Click **Email Templates → Create New Template** → paste in the template HTML
+5. Copy the **Template ID** (looks like `template_xxxxxxx`)
+6. Go to **Account → General** → copy the **Public Key**
 
-## STEP 2 — EmailJS (Order Emails)
-
-Tell the client to:
-1. Go to emailjs.com and create a free account
-2. Click "Email Services" → "Add New Service" → connect their Gmail
-3. Copy the Service ID (looks like service_xxxxxxx)
-4. Click "Email Templates" → "Create New Template"
-5. Copy the HTML from the existing template and paste it in
-6. Copy the Template ID (looks like template_xxxxxxx)
-7. Go to "Account" → "General" → copy the Public Key
+Update these 3 values in Vercel env vars:
+- `NEXT_PUBLIC_EMAILJS_SERVICE_ID`
+- `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID`
+- `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY`
 
 ---
 
-## STEP 3 — Supabase (Service Management Database)
+## STEP 2 — Clerk (Give client view access)
 
-Tell the client to:
-1. Go to supabase.com and create a free account
-2. Click "New Project" → name it anything (e.g. Pixora)
-3. Choose a region (Singapore is closest to Pakistan)
-4. Once the project loads, go to "SQL Editor" in the left sidebar
-5. Paste and run this SQL to create the services table:
+So the client can see who's signing up on their site.
 
-```sql
-create table services (
-  id uuid default gen_random_uuid() primary key,
-  name text not null,
-  category text not null,
-  description text not null,
-  price integer not null,
-  price_label text not null,
-  badge text,
-  slug text unique not null,
-  icon text default 'star',
-  details text[] default '{}',
-  deleted_at timestamptz default null,
-  created_at timestamptz default now()
-);
+1. Go to your Clerk Dashboard → your application → **Settings → Members**
+2. Click **Invite Member** → enter client's Gmail → set role to **Admin**
+3. They accept the invite — done
 
-alter table services enable row level security;
-
-create policy "Public read" on services for select using (true);
-create policy "Admin insert" on services for insert with check (true);
-create policy "Admin update" on services for update using (true);
-create policy "Admin delete" on services for delete using (true);
-```
-
-6. Go to "Settings" → "API Keys" → copy the Project URL and anon public key
+No key changes needed.
 
 ---
 
-## STEP 4 — Admin Emails
+## STEP 3 — Supabase (Give client view access)
 
-Decide which Gmail accounts should have admin access to the site.
-These emails will see the "Admin Panel" option in the profile dropdown.
-Can be one email or multiple (comma-separated).
+So the client can see their orders and data if needed.
 
----
+1. Go to your Supabase Dashboard → your project → **Settings → Team**
+2. Click **Invite** → enter client's Gmail → set role to **Developer**
+3. They accept the invite — done
 
-## CLIENT INFO — Fill in below when client sends details
-
-Once you have all info, update .env.local with these values:
-
-```
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=     <-- Clerk Publishable Key
-CLERK_SECRET_KEY=                      <-- Clerk Secret Key
-CLERK_TELEMETRY_DISABLED=1
-
-NEXT_PUBLIC_ADMIN_EMAILS=              <-- Admin Gmail(s), comma-separated e.g. owner@gmail.com,partner@gmail.com
-
-NEXT_PUBLIC_EMAILJS_SERVICE_ID=        <-- EmailJS Service ID
-NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=       <-- EmailJS Template ID
-NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=        <-- EmailJS Public Key
-
-NEXT_PUBLIC_SUPABASE_URL=              <-- Supabase Project URL (https://xxxx.supabase.co)
-NEXT_PUBLIC_SUPABASE_ANON_KEY=         <-- Supabase anon public key
-```
+No key changes needed.
 
 ---
 
-## STEP 5 — Apply the changes
+## STEP 4 — Set Admin Email
 
-1. Open .env.local and fill in all values above
-2. Go to Vercel dashboard → Project → Settings → Environment Variables
-3. Add every variable from .env.local to Vercel (same names, same values)
-   - Vercel may show a warning for NEXT_PUBLIC_ variables saying they are visible in the browser
-   - This is expected — just click "Mark as Safe" and continue
-4. Redeploy: Vercel dashboard → Deployments → Redeploy
+Update `NEXT_PUBLIC_ADMIN_EMAILS` in Vercel with the client's Gmail so they can access the Admin Panel on the site.
 
-Done. The site is fully connected to the client's accounts.
+1. Go to Vercel → Project → **Settings → Environment Variables**
+2. Edit `NEXT_PUBLIC_ADMIN_EMAILS` → set it to the client's Gmail
+3. Redeploy
 
 ---
 
-## How the admin panel works
+## What the client can do on their own
 
-- Sign in with an admin Gmail → profile dropdown shows "Admin Panel"
-- Go to /admin — sidebar with Dashboard, Services, and Trash pages
-- **Dashboard**: stats overview, order instructions, quick links
-- **Services**: add, edit, delete services. Click "Migrate Static" once on first setup to import all built-in services into the database so they can be managed from the panel
-- **Trash**: deleted services go here first. Restore or permanently delete. Built-in (static) services can only be hidden via Trash — not permanently deleted
-- Services added or edited here appear live on the shop instantly
-- Orders from customers are emailed to the admin Gmail via EmailJS
-- Cancelled orders also trigger an email notification
+- Add / edit / delete services (Admin Panel → Services)
+- View and manage orders (Admin Panel → Orders)
+- Give team members access (Admin Panel → Settings → Team Access)
+
+## What the client contacts you for
+
+- Design changes
+- New features
+- Something breaks
