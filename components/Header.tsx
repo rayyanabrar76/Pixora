@@ -585,7 +585,15 @@ function MobileUserRow({ onClose }: { onClose: () => void }) {
   const { user } = useUser();
   const { signOut } = useClerk();
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   if (!user) return null;
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await new Promise(r => setTimeout(r, 1200));
+    signOut();
+    onClose();
+  }
   const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || "User";
   const email = user.emailAddresses[0]?.emailAddress ?? "";
   return (
@@ -616,17 +624,28 @@ function MobileUserRow({ onClose }: { onClose: () => void }) {
       </div>
       {confirmSignOut && (
         <div className="flex items-center gap-2">
-          <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
-          <button onClick={() => { signOut(); onClose(); }}
-            className="px-3 py-1 rounded-lg text-xs font-bold"
-            style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
-            Yes
-          </button>
-          <button onClick={() => setConfirmSignOut(false)}
-            className="px-3 py-1 rounded-lg text-xs font-bold"
-            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
-            Cancel
-          </button>
+          {signingOut ? (
+            <div className="flex items-center gap-2 flex-1">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}>
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+              </svg>
+              <span className="text-xs" style={{ color: "rgba(148,163,184,0.6)" }}>Signing out…</span>
+            </div>
+          ) : (
+            <>
+              <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
+              <button onClick={handleSignOut}
+                className="px-3 py-1 rounded-lg text-xs font-bold"
+                style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
+                Yes
+              </button>
+              <button onClick={() => setConfirmSignOut(false)}
+                className="px-3 py-1 rounded-lg text-xs font-bold"
+                style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
+                Cancel
+              </button>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -641,6 +660,7 @@ function UserMenu() {
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [isSubAdmin, setIsSubAdmin] = useState(false);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const btnRef = useRef<HTMLButtonElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
 
@@ -724,7 +744,7 @@ function UserMenu() {
               boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
               animation: "ddFadeIn 0.18s cubic-bezier(0.16,1,0.3,1)",
             }}>
-            <style>{`@keyframes ddFadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}`}</style>
+            <style>{`@keyframes ddFadeIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}} @keyframes spin{to{transform:rotate(360deg)}}`}</style>
 
             {/* Top accent */}
             <div style={{ height: 1, background: "linear-gradient(to right,transparent,rgba(37,99,235,0.6),transparent)" }} />
@@ -784,19 +804,30 @@ function UserMenu() {
               </a>
               {confirmSignOut ? (
                 <div className="flex items-center gap-2 px-4 py-2.5">
-                  <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
-                  <button
-                    onClick={() => { signOut(); setOpen(false); setConfirmSignOut(false); }}
-                    className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                    style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
-                    Yes, sign out
-                  </button>
-                  <button
-                    onClick={() => setConfirmSignOut(false)}
-                    className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
-                    style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
-                    Cancel
-                  </button>
+                  {signingOut ? (
+                    <div className="flex items-center gap-2 flex-1">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" style={{ animation: "spin 0.8s linear infinite", flexShrink: 0 }}>
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                      </svg>
+                      <span className="text-xs" style={{ color: "rgba(148,163,184,0.6)" }}>Signing out…</span>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-xs flex-1" style={{ color: "#f87171" }}>Sign out?</span>
+                      <button
+                        onClick={async () => { setSigningOut(true); await new Promise(r => setTimeout(r, 1200)); signOut(); setOpen(false); setConfirmSignOut(false); }}
+                        className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
+                        style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
+                        Yes, sign out
+                      </button>
+                      <button
+                        onClick={() => setConfirmSignOut(false)}
+                        className="px-3 py-1 rounded-lg text-xs font-bold transition-colors"
+                        style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
+                        Cancel
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <button onClick={() => setConfirmSignOut(true)}
