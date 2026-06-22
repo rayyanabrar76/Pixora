@@ -118,9 +118,25 @@ export default function CheckoutPage() {
     setLoading(true);
     setError("");
 
-    const orderItems = items
-      .map((item) => `${item.name} x${item.qty} - Rs.${(item.price * item.qty).toLocaleString()}`)
-      .join("\n");
+    const orderItemRows = items.map((item) => `
+      <tr>
+        <td style="padding:10px 0;vertical-align:middle;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#0097B2,#0369a1);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;flex-shrink:0;">
+              ${item.name[0].toUpperCase()}
+            </div>
+            <div>
+              <div style="font-weight:600;font-size:14px;color:#1e293b;">${item.name}</div>
+              <div style="font-size:12px;color:#64748b;">${item.category} &middot; Qty: ${item.qty}</div>
+            </div>
+          </div>
+        </td>
+        <td style="padding:10px 0;text-align:right;vertical-align:middle;font-weight:700;font-size:14px;color:#0097B2;">
+          Rs.${(item.price * item.qty).toLocaleString()}
+        </td>
+      </tr>
+    `).join("");
+    const orderItems = `<table style="width:100%;border-collapse:collapse;">${orderItemRows}</table>`;
 
     try {
       /* Save order immediately — always succeeds regardless of email */
