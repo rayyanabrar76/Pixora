@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { PMark } from "@/components/Logo";
-import { Mail, Phone, MapPin, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaWhatsapp } from "react-icons/fa";
 
 const POLICIES = [
@@ -16,6 +17,31 @@ const POLICIES = [
 const SERVICES_LIST = ["Logo Design", "Landing Page", "Social Media Management", "SEO Optimization", "E-Commerce Store", "Email Marketing", "Google My Business", "Photography"];
 
 export default function Footer() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "exists">("idle");
+
+  async function handleSubscribe() {
+    if (!email) return;
+    setStatus("loading");
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setStatus("success");
+        setEmail("");
+      } else if (res.status === 409) {
+        setStatus("exists");
+      } else {
+        setStatus("error");
+      }
+    } catch {
+      setStatus("error");
+    }
+  }
+
   return (
     <footer className="bg-gray-950 text-gray-400 mt-auto" style={{ display: "flex", flexDirection: "column" }}>
 
@@ -48,13 +74,33 @@ export default function Footer() {
           <div className="lg:w-96 w-full">
             <p className="text-white font-bold text-base mb-3">Stay in the loop</p>
             <p className="text-gray-500 text-sm mb-4">Get updates on our latest services and offers.</p>
-            <div className="flex gap-2">
-              <input type="email" placeholder="your@email.com"
-                className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-4 py-3 rounded-xl outline-none focus:border-blue-500 placeholder-gray-600" />
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition-colors">
-                <ArrowRight size={18} />
-              </button>
-            </div>
+            {status === "success" ? (
+              <div className="flex items-center gap-2 text-green-400 text-sm font-semibold">
+                <CheckCircle2 size={16} /> You&apos;re subscribed!
+              </div>
+            ) : (
+              <>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    onKeyDown={e => e.key === "Enter" && handleSubscribe()}
+                    disabled={status === "loading"}
+                    className="flex-1 bg-gray-800 border border-gray-700 text-white text-sm px-4 py-3 rounded-xl outline-none focus:border-blue-500 placeholder-gray-600 disabled:opacity-50"
+                  />
+                  <button
+                    onClick={handleSubscribe}
+                    disabled={status === "loading"}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl transition-colors disabled:opacity-50">
+                    <ArrowRight size={18} />
+                  </button>
+                </div>
+                {status === "exists" && <p className="text-yellow-400 text-xs mt-2">Already subscribed.</p>}
+                {status === "error" && <p className="text-red-400 text-xs mt-2">Something went wrong. Try again.</p>}
+              </>
+            )}
           </div>
         </div>
       </div>
