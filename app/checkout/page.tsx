@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Loader2, PackageCheck, ShoppingBag } from "lucide-react";
+import { ArrowRight, CheckCircle2, Loader2, PackageCheck, ShoppingBag, ShieldCheck, Save, Mail } from "lucide-react";
 import emailjs from "@emailjs/browser";
 import { supabase } from "@/lib/supabase";
 
@@ -324,9 +324,9 @@ export default function CheckoutPage() {
   /* ── Processing screen ── */
   if (processing) {
     const STEPS = [
-      { label: "Verifying your details…",     icon: "🔍" },
-      { label: "Saving your order…",           icon: "💾" },
-      { label: "Sending confirmation email…",  icon: "📧" },
+      { label: "Verifying your details…",     Icon: ShieldCheck },
+      { label: "Saving your order…",           Icon: Save        },
+      { label: "Sending confirmation email…",  Icon: Mail        },
     ];
     return (
       <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}
@@ -383,13 +383,13 @@ export default function CheckoutPage() {
                 <div key={s.label}
                   className="flex items-center gap-3"
                   style={{ animation: !isPending ? "step-in 0.4s ease forwards" : undefined }}>
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-sm transition-all"
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-all"
                     style={
                       isDone    ? { background: "rgba(34,197,94,0.15)",  border: "1px solid rgba(34,197,94,0.3)",  color: "#4ade80"  } :
                       isActive  ? { background: "rgba(37,99,235,0.15)",  border: "1px solid rgba(37,99,235,0.35)", color: "#60a5fa"  } :
                                   { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(100,116,139,0.3)" }
                     }>
-                    {isDone ? "✓" : s.icon}
+                    {isDone ? <CheckCircle2 size={14} /> : <s.Icon size={14} />}
                   </div>
                   <span className="text-sm font-medium transition-all"
                     style={{ color: isDone ? "#4ade80" : isActive ? "#e2e8f0" : "rgba(100,116,139,0.35)" }}>
