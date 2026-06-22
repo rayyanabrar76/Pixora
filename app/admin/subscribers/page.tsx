@@ -14,6 +14,7 @@ export default function SubscribersPage() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
@@ -27,7 +28,9 @@ export default function SubscribersPage() {
   }, []);
 
   async function handleDelete(id: string) {
+    if (confirmId !== id) { setConfirmId(id); return; }
     setDeleting(id);
+    setConfirmId(null);
     await supabase.from("newsletter_subscribers").delete().eq("id", id);
     setSubscribers(prev => prev.filter(s => s.id !== id));
     setDeleting(null);
@@ -78,14 +81,33 @@ export default function SubscribersPage() {
                   {new Date(s.created_at).toLocaleDateString("en-PK", { day: "numeric", month: "short", year: "numeric" })}
                 </p>
               </div>
-              <button
-                onClick={() => handleDelete(s.id)}
-                disabled={deleting === s.id}
-                className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40"
-                style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#f87171" }}
-                title="Remove subscriber">
-                <Trash2 size={13} />
-              </button>
+              {confirmId === s.id ? (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: "#f87171" }}>Sure?</span>
+                  <button
+                    onClick={() => handleDelete(s.id)}
+                    disabled={deleting === s.id}
+                    className="px-2.5 py-1 rounded-lg text-xs font-bold transition-colors disabled:opacity-40"
+                    style={{ background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171" }}>
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => setConfirmId(null)}
+                    className="px-2.5 py-1 rounded-lg text-xs font-bold transition-colors"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(148,163,184,0.7)" }}>
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => handleDelete(s.id)}
+                  disabled={deleting === s.id}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center transition-colors disabled:opacity-40"
+                  style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)", color: "#f87171" }}
+                  title="Remove subscriber">
+                  <Trash2 size={13} />
+                </button>
+              )}
             </div>
           ))}
         </div>
