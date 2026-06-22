@@ -144,7 +144,7 @@ export default function CheckoutPage() {
 
     try {
       /* Step 1 — verifying */
-      await new Promise(r => setTimeout(r, 700));
+      await new Promise(r => setTimeout(r, 1400));
       setProcessStep(1);
 
       /* Save order to localStorage */
@@ -166,7 +166,7 @@ export default function CheckoutPage() {
       }
 
       /* Step 2 — saving */
-      await new Promise(r => setTimeout(r, 800));
+      await new Promise(r => setTimeout(r, 1600));
       setProcessStep(2);
 
       /* Send email + Supabase in background */
@@ -201,10 +201,10 @@ export default function CheckoutPage() {
       })();
 
       /* Step 3 — sending confirmation */
-      await new Promise(r => setTimeout(r, 900));
+      await new Promise(r => setTimeout(r, 1800));
       setProcessStep(3);
 
-      await new Promise(r => setTimeout(r, 600));
+      await new Promise(r => setTimeout(r, 1000));
 
       clearCart();
       setProcessing(false);
