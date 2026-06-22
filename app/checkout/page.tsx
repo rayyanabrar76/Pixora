@@ -68,6 +68,8 @@ export default function CheckoutPage() {
   const [mounted, setMounted] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [processStep, setProcessStep] = useState(0);
   const [error, setError] = useState("");
   const [focused, setFocused] = useState("");
 
@@ -117,6 +119,8 @@ export default function CheckoutPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    setProcessing(true);
+    setProcessStep(0);
 
     const orderItemRows = items.map((item) => `
       <tr>
@@ -139,7 +143,11 @@ export default function CheckoutPage() {
     const orderItems = `<table style="width:100%;border-collapse:collapse;">${orderItemRows}</table>`;
 
     try {
-      /* Save order immediately — always succeeds regardless of email */
+      /* Step 1 — verifying */
+      await new Promise(r => setTimeout(r, 700));
+      setProcessStep(1);
+
+      /* Save order to localStorage */
       const localId = `order_${Date.now()}`;
       if (user) {
         const order: StoredOrder = {
@@ -157,10 +165,11 @@ export default function CheckoutPage() {
         saveOrder(user.id, order);
       }
 
-      setDone(true);
-      clearCart();
+      /* Step 2 — saving */
+      await new Promise(r => setTimeout(r, 800));
+      setProcessStep(2);
 
-      /* Send email notification in background — never blocks checkout */
+      /* Send email + Supabase in background */
       void emailjs.send(EJ_SVC, EJ_TPL, {
         name: `${form.firstName} ${form.lastName}`,
         email: form.email,
@@ -168,9 +177,8 @@ export default function CheckoutPage() {
         order_items: orderItems,
         total: totalPrice.toLocaleString(),
         notes: form.notes || "No notes",
-      }, EJ_KEY).catch(() => { /* silently ignore — admin sees order in panel */ });
+      }, EJ_KEY).catch(() => {});
 
-      /* Save to Supabase in the background — never blocks or breaks checkout */
       void (async () => {
         try {
           const { data } = await supabase.from("orders").insert({
@@ -192,7 +200,18 @@ export default function CheckoutPage() {
         } catch { /* silently ignore */ }
       })();
 
+      /* Step 3 — sending confirmation */
+      await new Promise(r => setTimeout(r, 900));
+      setProcessStep(3);
+
+      await new Promise(r => setTimeout(r, 600));
+
+      clearCart();
+      setProcessing(false);
+      setDone(true);
+
     } catch {
+      setProcessing(false);
       setError("Something went wrong. Please try again or WhatsApp us directly.");
     } finally {
       setLoading(false);
@@ -301,6 +320,92 @@ export default function CheckoutPage() {
       </div>
     </div>
   );
+
+  /* ── Processing screen ── */
+  if (processing) {
+    const STEPS = [
+      { label: "Verifying your details…",     icon: "🔍" },
+      { label: "Saving your order…",           icon: "💾" },
+      { label: "Sending confirmation email…",  icon: "📧" },
+    ];
+    return (
+      <div style={{ background: "linear-gradient(180deg,#060d1f 0%,#080f22 100%)", minHeight: "100vh" }}
+        className="flex items-center justify-center px-4">
+        <style>{`
+          @keyframes pulse-ring {
+            0%   { transform: scale(0.9); opacity: 0.6; }
+            50%  { transform: scale(1.12); opacity: 0.15; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+          }
+          @keyframes step-in {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+        `}</style>
+
+        {/* Ambient glow */}
+        <div className="fixed top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none"
+          style={{ background: "radial-gradient(circle,#2563eb,transparent)" }} />
+
+        <div className="text-center relative z-10 max-w-sm w-full">
+          {/* Spinner */}
+          <div className="relative w-28 h-28 mx-auto mb-10">
+            {/* Pulse ring */}
+            <div className="absolute inset-0 rounded-full"
+              style={{ background: "rgba(37,99,235,0.12)", animation: "pulse-ring 2s ease-in-out infinite" }} />
+            {/* Outer ring spinner */}
+            <div className="absolute inset-0 rounded-full border-4"
+              style={{ borderColor: "rgba(37,99,235,0.12)", borderTopColor: "#2563eb", animation: "spin 1s linear infinite" }} />
+            <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+            {/* Inner circle */}
+            <div className="absolute inset-4 rounded-full flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg,rgba(37,99,235,0.2),rgba(79,70,229,0.15))", border: "1px solid rgba(37,99,235,0.3)" }}>
+              <PackageCheck size={28} style={{ color: "#60a5fa" }} />
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-extrabold mb-2"
+            style={{ background: "linear-gradient(135deg,#fff 40%,#93c5fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+            Processing Your Order
+          </h2>
+          <p className="text-sm mb-8" style={{ color: "rgba(100,116,139,0.6)" }}>
+            Please wait, this will only take a moment…
+          </p>
+
+          {/* Steps */}
+          <div className="text-left space-y-3 bg-opacity-50 rounded-2xl p-5"
+            style={{ background: "#0b1120", border: "1px solid rgba(255,255,255,0.07)" }}>
+            {STEPS.map((s, i) => {
+              const isActive  = processStep === i + 1;
+              const isDone    = processStep > i + 1;
+              const isPending = processStep <= i;
+              return (
+                <div key={s.label}
+                  className="flex items-center gap-3"
+                  style={{ animation: !isPending ? "step-in 0.4s ease forwards" : undefined }}>
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-sm transition-all"
+                    style={
+                      isDone    ? { background: "rgba(34,197,94,0.15)",  border: "1px solid rgba(34,197,94,0.3)",  color: "#4ade80"  } :
+                      isActive  ? { background: "rgba(37,99,235,0.15)",  border: "1px solid rgba(37,99,235,0.35)", color: "#60a5fa"  } :
+                                  { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)", color: "rgba(100,116,139,0.3)" }
+                    }>
+                    {isDone ? "✓" : s.icon}
+                  </div>
+                  <span className="text-sm font-medium transition-all"
+                    style={{ color: isDone ? "#4ade80" : isActive ? "#e2e8f0" : "rgba(100,116,139,0.35)" }}>
+                    {s.label}
+                  </span>
+                  {isActive && (
+                    <Loader2 size={13} className="animate-spin ml-auto shrink-0" style={{ color: "#60a5fa" }} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* ── Success screen ── */
   if (done) {
