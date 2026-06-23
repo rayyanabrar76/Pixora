@@ -239,9 +239,8 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-gray-800/50 py-5 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600">
+        <div className="max-w-7xl mx-auto flex items-center justify-center text-sm text-gray-600">
           <span>© 2026 FAHADAMINAENTERPRISES. All rights reserved.</span>
-          <span>Designed &amp; built with ❤️ in Pakistan</span>
         </div>
       </div>
     </footer>
