@@ -39,13 +39,8 @@ export default function ServiceBanner({ name, icon, category }: {
       {/* Right-side illustration */}
       {getIllustration(icon)}
 
-      {/* Pixora P mark */}
-      <g transform="translate(246,8)">
-        <rect width="24" height="24" rx="5" fill="rgba(255,255,255,0.15)" />
-        <path d="M4,4 L4,20 L7.5,20 L7.5,14 L17,14 L18.5,12.5 L18.5,5.5 L17,4 Z" fill="white" />
-        <rect x="7.5" y="6.5" width="8.5" height="5.5" rx="0.5" fill="rgba(0,0,0,0.3)" />
-        <circle cx="22" cy="20" r="2.5" fill="#60a5fa" />
-      </g>
+      {/* Site logo mark */}
+      <image href="/logo_transparent.png" x="246" y="6" width="26" height="26" />
 
       {/* Service name — left column, clipped so it never overlaps the illustration */}
       <g clipPath={`url(#${clipId})`}>
