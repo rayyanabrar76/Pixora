@@ -40,7 +40,10 @@ export default function ServiceBanner({ name, icon, category }: {
       {getIllustration(icon)}
 
       {/* Site logo mark */}
-      <image href="/logo_transparent.png" x="246" y="6" width="26" height="26" />
+      <g transform="translate(244,5)">
+        <rect width="30" height="30" rx="6" fill="rgba(255,255,255,0.18)" />
+        <image href="/logo_transparent.png" x="3" y="3" width="24" height="24" preserveAspectRatio="xMidYMid meet" />
+      </g>
 
       {/* Service name — left column, clipped so it never overlaps the illustration */}
       <g clipPath={`url(#${clipId})`}>
